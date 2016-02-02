@@ -13,13 +13,12 @@ public class App
     public static void main( String[] args )
     {
     	app.welcomeMessage();
-    	Scanner sc = new Scanner(System.in);
-        int i = sc.nextInt();
     }
     
     public void welcomeMessage(){
     	if(loggedIn == null){
     		guestMsg();
+    		guestOptions();
     	}
     	else if(loggedIn.getId().equals("Sheldon")){
     			adminWelcomeMessage();
@@ -53,4 +52,20 @@ public class App
     			newLine + "3. Borrow a comic" + newLine + "4. Logout");
     }
     
+    private int getInput(){
+    	Scanner sc = new Scanner(System.in);
+        return sc.nextInt();
+    }
+    
+    private void guestOptions(){
+    	/*
+    	switch (key) {
+		case value:
+			
+			break;
+
+		default:
+			break;
+		}*/
+    }
 }
