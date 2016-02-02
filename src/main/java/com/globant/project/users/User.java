@@ -2,7 +2,7 @@ package com.globant.project.users;
 
 import com.globant.project.catalog.Catalog;
 
-public class User {
+public class User{
 	
 	String id, password;
 	Catalog catalog = Catalog.getInstance();
@@ -15,7 +15,7 @@ public class User {
 	public String getId() {
 		return id;
 	}
-
+	
 	public String getPassword() {
 		return password;
 	}
