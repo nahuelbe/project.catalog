@@ -4,7 +4,6 @@ import com.globant.project.catalog.Catalog;
 import com.globant.project.exceptions.InvalidOptionException;
 import com.globant.project.exceptions.login.IncorrectIDException;
 import com.globant.project.exceptions.login.IncorrectPasswordException;
-import com.globant.project.users.Admin;
 import com.globant.project.users.User;
 
 import java.util.InputMismatchException;
@@ -45,10 +44,25 @@ public class App
     		}
     		else{
     			userWelcomeMessage();
+    			try{
+    				int selectedOption = userSelection();
+    				loggedIn.execute(selectedOption);
+    			} catch (InvalidOptionException ex) { 
+    				System.out.println(ex.getMessage());}
     		}
     }
     
-    private void execute(int selectedOption) {
+    private int userSelection() throws InvalidOptionException{
+    	Scanner scan = new Scanner(System.in);
+    	int option = scan.nextInt();
+    	if(option < 1 || option > 4)
+    		throw new InvalidOptionException();
+    	if(option == 4)
+    		logOut();
+		return option;
+	}
+
+	private void execute(int selectedOption) {
     	loggedIn.execute(selectedOption);
     }
 
@@ -89,18 +103,6 @@ public class App
     public void logOut(){
     	loggedIn = null;
     	welcomeMessage();
-    }
-    
-    private void adminOptions(){
-    	Scanner scan = new Scanner(System.in);
-    	int option = scan.nextInt();
-    	switch (option) {
-		case 8:
-			logOut();
-			break;
-		default:
-			break;
-		}
     }
     
     private void guestOptions(){
