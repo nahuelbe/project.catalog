@@ -1,8 +1,14 @@
 package com.globant.project.users;
 
 import java.util.List;
+import java.util.Scanner;
+
+import com.globant.project.catalog.Catalog;
+import com.globant.project.comic.Comic;
 
 public class Admin extends User {
+	
+	Catalog catalog = Catalog.getInstance();
 
 	public Admin(String id, String pass) {
 		super(id, pass);
@@ -26,6 +32,31 @@ public class Admin extends User {
 	
 	public List<User> getUsers(){
 		return catalog.getUsers();
+	}
+	
+	public void execute(int option) {
+		switch (option) {
+		case 1:
+		//	catalog.viewCatalog();
+			break;
+		case 2:
+			Scanner scan = new Scanner(System.in);
+			System.out.println("Enter new user ID: ");
+			String id = scan.nextLine();
+			System.out.println("Enter new user password: ");
+			String password = scan.nextLine();
+			registerUser(id,password.toString());
+		default:
+			break;
+		}
+	}
+
+	public void registerComic(Comic spidermanComic) {
+		catalog.registerComic(spidermanComic);
+	}
+
+	public Comic searchComic(String aName) {
+		return catalog.searchComic(aName);
 	}
 
 }

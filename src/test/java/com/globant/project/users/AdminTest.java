@@ -1,6 +1,7 @@
 package com.globant.project.users;
 
 import com.globant.project.catalog.Catalog;
+import com.globant.project.comic.Comic;
 
 import junit.framework.TestCase;
 
@@ -42,13 +43,14 @@ public class AdminTest extends TestCase {
 	
 	public void testAdminRevokesAnUserSuccessfully(){
 		admin.revokeUser("Nahue");
-		assertTrue(admin.getUsers().isEmpty());
+		assertFalse(admin.userExist("Nahue"));
 	}
 	
-	/*	
-	public void testAnAdminCanAddAComicToTheCatalog(){
-		admin.registerComic(new Comic("T.M.N.T vol III Manhattan Project"));
-	}*/
+	public void testAnAdminCanAddAComicToAnEmptyCatalog(){
+		Comic spidermanComic = new Comic("Spiderman"); 
+		admin.registerComic(spidermanComic);
+		assertEquals(spidermanComic, admin.searchComic("Spiderman"));
+	}
 	
 	
 }
