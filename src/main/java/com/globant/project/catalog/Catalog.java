@@ -1,7 +1,6 @@
 package com.globant.project.catalog;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,14 +35,31 @@ public class Catalog {
 	public static void emptyUsers(){
 		getInstance().users = new ArrayList<User>();
 	}
-
+	
+	public static void emptyComics(){
+		getInstance().comics = new HashSet<Comic>();
+	}
+	
 	public void registerComic(Comic aComic) {
-		if(comics.contains(aComic))
+		if(comics.stream().anyMatch(comic -> comic.getName().equals(aComic.getName())))
 			comics.stream().filter(comic -> comic.getName().equals(aComic.getName())).findFirst().get().addCopy();
-		comics.add(aComic);
+		else
+			comics.add(aComic);
 	}
 
 	public Comic searchComic(String aName) {
 		return comics.stream().filter(comic -> comic.getName().equals(aName)).findFirst().get();
+	}
+
+	public Set<Comic> getComics() {
+		return comics;
+	}
+
+	public boolean checkUserProperties(String id, String password) {
+		return users.stream().anyMatch(user -> user.getId().equals(id) && user.getPassword().equals(password));
+	}
+
+	public boolean userExists(String id, String password) {
+		return users.stream().anyMatch(user -> user.getId().equals(id));
 	}
 }

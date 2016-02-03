@@ -2,6 +2,7 @@ package com.globant.project.users;
 
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 import com.globant.project.catalog.Catalog;
 import com.globant.project.comic.Comic;
@@ -46,7 +47,7 @@ public class Admin extends User {
 			System.out.println("Enter new user password: ");
 			String password = scan.nextLine();
 			registerUser(id,password.toString());
-		default:
+		default :
 			break;
 		}
 	}
@@ -57,6 +58,14 @@ public class Admin extends User {
 
 	public Comic searchComic(String aName) {
 		return catalog.searchComic(aName);
+	}
+
+	public Set<Comic> getComics() {
+		return catalog.getComics();
+	}
+
+	public void removeUser(String anId) {
+		getUsers().remove(getUsers().stream().filter(user -> user.getId().equals(anId)).findFirst().get());
 	}
 
 }

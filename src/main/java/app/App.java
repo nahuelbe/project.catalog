@@ -1,6 +1,9 @@
-package com.globant.project.catalog;
+package app;
 
+import com.globant.project.catalog.Catalog;
 import com.globant.project.exceptions.InvalidOptionException;
+import com.globant.project.exceptions.login.IncorrectIDException;
+import com.globant.project.exceptions.login.IncorrectPasswordException;
 import com.globant.project.users.Admin;
 import com.globant.project.users.User;
 
@@ -9,9 +12,9 @@ import java.util.Scanner;
 
 public class App 
 {
-	User loggedIn = new Admin("Sheldon","Bazinga");
+	User loggedIn = null;
 	public static App app = new App();
-	private Catalog catalog = Catalog.getInstance();
+	//private Catalog catalog = Catalog.getInstance();
 	
     public static void main( String[] args )
     {
@@ -54,6 +57,8 @@ public class App
     	int option = scan.nextInt();
     	if(option < 1 || option > 8)
     		throw new InvalidOptionException();
+    	if(option == 8)
+    		logOut();
     	return option;
 	}
 
@@ -83,17 +88,72 @@ public class App
     
     public void logOut(){
     	loggedIn = null;
+    	welcomeMessage();
+    }
+    
+    private void adminOptions(){
+    	Scanner scan = new Scanner(System.in);
+    	int option = scan.nextInt();
+    	switch (option) {
+		case 8:
+			logOut();
+			break;
+		default:
+			break;
+		}
     }
     
     private void guestOptions(){
-    	/*
-    	switch (key) {
-		case value:
-			
+    	Scanner scan = new Scanner(System.in);
+    	int option = scan.nextInt();
+    	switch (option) {
+		case 1:
+			showComics();
+			break;
+		case 2:
+			try{ logIn(); } 
+			catch (IncorrectPasswordException|IncorrectIDException ex) { 
+				System.out.println(ex.getMessage()); 
+				welcomeMessage();
+			}
 			break;
 
 		default:
+			
 			break;
-		}*/
+    	}
+    }
+    
+    private void logIn() throws IncorrectPasswordException,IncorrectIDException {
+    	Scanner scan = new Scanner(System.in);
+    	System.out.println("Username: ");
+    	String id = scan.nextLine();
+    	System.out.println("Password: ");
+    	String password = scan.nextLine();
+    	if(checkUserLogIn(id, password)){
+    		loggedIn = getUser(id, password);
+    		System.out.println("Welcome " + id);
+    		welcomeMessage();
+    	}
+    	else if (userExists(id, password))
+    		throw new IncorrectPasswordException();
+    	else
+    		throw new IncorrectIDException();
+	}
+    
+    private boolean userExists(String id, String password) {
+		return Catalog.getInstance().userExists(id,password);
+	}
+
+	private boolean checkUserLogIn(String id, String password){
+    	return Catalog.getInstance().checkUserProperties(id,password);
+    }
+    
+    private User getUser(String id, String password){
+    	return Catalog.getInstance().getUsers().stream().filter(user -> user.getId().equals(id) && user.getPassword().equals(password)).findFirst().get();
+    }
+
+	private void showComics(){
+    	Catalog.getInstance().getComics();
     }
 }

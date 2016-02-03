@@ -18,11 +18,12 @@ public class AdminTest extends TestCase {
 	@Override
 	protected void tearDown() throws Exception {
 		Catalog.emptyUsers();
+		Catalog.emptyComics();
 	}
 	
 	public void testAdminCanRegisterAnUserInAnEmptyCatalog(){
-		Catalog.emptyUsers();
-		admin.registerUser("Nahue","sarasa");
+		//Catalog.emptyUsers();
+		//admin.registerUser("Nahue","sarasa");
 		admin.registerUser("Batman","bati");
 		assertFalse(admin.getUsers().isEmpty());
 		assertEquals(2, admin.getUsers().size());
@@ -47,10 +48,18 @@ public class AdminTest extends TestCase {
 	}
 	
 	public void testAnAdminCanAddAComicToAnEmptyCatalog(){
-		Comic spidermanComic = new Comic("Spiderman"); 
+		Comic spidermanComic = new Comic("Spiderman");
 		admin.registerComic(spidermanComic);
 		assertEquals(spidermanComic, admin.searchComic("Spiderman"));
+		assertEquals(1, admin.searchComic("Spiderman").getCopies());
 	}
 	
+	public void testWhenAnAdminAddsAnExistentComicItIncreasesItsCopiesByOne(){
+		Comic spidermanComic = new Comic("Spiderman");
+		Comic otherSpidermanComic = new Comic("Spiderman");
+		admin.registerComic(spidermanComic);
+		admin.registerComic(otherSpidermanComic);
+		assertEquals(2, admin.searchComic("Spiderman").getCopies());
+	}
 	
 }

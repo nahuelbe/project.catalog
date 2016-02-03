@@ -18,6 +18,10 @@ public class Comic {
 	}
 	
 	public void addCopy(){
-		copies++;
+		copies = copies + 1;
+	}
+	
+	public boolean equals(Comic aComic) {
+		return (name.equals(aComic.getName()));
 	}
 }
