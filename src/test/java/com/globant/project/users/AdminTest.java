@@ -95,6 +95,11 @@ public class AdminTest extends TestCase {
 		assertEquals(2, filteredComicsByGender.size());
 	}
 	
-	
+	public void testEditAnUserSuccessfully(){
+		admin.editUsername("Nahue","Duality");
+		admin.editPassword("Duality","newPassword");
+		assertTrue(admin.userExist("Duality"));
+		assertFalse(admin.userExist("Nahue"));
+	}
 	
 }

@@ -59,9 +59,9 @@ public class App implements Scanneable, NextLiner
 
 	private int adminSelection() throws InvalidOptionException{
     	int option = scanIntOption();
-    	if(option < 1 || option > 8)
+    	if(option < 1 || option > 9)
     		throw new InvalidOptionException();
-    	if(option == 8)
+    	if(option == 9)
     		logOut();
     	return option;
 	}
@@ -76,10 +76,10 @@ public class App implements Scanneable, NextLiner
     }
     
     private void adminshowMenu(){
-    	System.out.println(standardWelcomeMsg() + "2. Add user" + nextLine() + "3. Remove user"
-    			+ nextLine() + "4. Add Comic" + nextLine() + "5. Remove Comic" + nextLine() +
-    			"6. Remove Genre" + nextLine() + "7. Edit Genre" + nextLine() +
-    			"8. Logout" + nextLine());
+    	System.out.println(standardWelcomeMsg() + "2. Add user" + nextLine() + "3. Edit user" + 
+    			nextLine() + "4. Remove user" + nextLine() + "5. Add Comic" + nextLine() + 
+    			"6. Remove Comic" + nextLine() + "7. Remove Genre" + nextLine() + 
+    			"8. Edit Genre" + nextLine() + "9. Logout" + nextLine());
     }
     
     private void usershowMenu(){

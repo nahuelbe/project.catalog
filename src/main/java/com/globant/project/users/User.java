@@ -41,5 +41,13 @@ public class User implements Scanneable, NextLiner{
 			break;
 		}
 	}
+	
+	public void setPassword(String newPassword){
+		password = newPassword;
+	}
+
+	public void setId(String newId) {
+		id = newId;
+	}
 
 }

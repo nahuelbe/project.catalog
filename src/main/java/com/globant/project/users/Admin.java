@@ -1,5 +1,6 @@
 package com.globant.project.users;
 
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Set;
 
@@ -7,6 +8,7 @@ import com.globant.project.catalog.Catalog;
 import com.globant.project.comic.Comic;
 import com.globant.project.exception.NoGendersException;
 import com.globant.project.exceptions.InvalidGenreException;
+import com.globant.project.exceptions.InvalidOptionException;
 
 public class Admin extends User {
 
@@ -43,18 +45,47 @@ public class Admin extends User {
 			fillUserRegister();
 			break;
 		case 3:
-			deleteUser();
+			editUser();
 			break;
 		case 4:
+			deleteUser();
+		case 5:
 			fillComicRegister();
 		default :
 			break;
 		}
 	}
 
+	private void editUser(){
+		showEditOptions();
+		try{
+			switch (editOptionSelection()) {
+			case 1:
+				break;
+			case 2:
+				break;
+			default:
+				break;
+			}
+		} 
+		catch (InputMismatchException ex){
+			System.out.println(nextLine() + 
+			"You must enter a valid number" + nextLine()); 
+			editUser();
+		}
+		catch (InvalidOptionException ex) {
+			System.out.println(ex.getMessage());
+			editUser();
+		}
+	}
+
+	private void showEditOptions() {
+		System.out.println("1. Edit user ID" + nextLine() + "2. Edit user password");
+	}
+
 	private void fillComicRegister() {
-		registerComic(new Comic(scanStringWithMessage("Enter new Comic name: "),
-						scanStringWithMessage("Enter gender of new comic: ")));
+		registerComic(new Comic(scanStringWithMessage(nextLine() + "Enter new Comic name: " + nextLine()),
+						scanStringWithMessage(nextLine() + "Enter gender of new comic: " + nextLine())));
 	}
 
 	public void registerComic(Comic spidermanComic) {
@@ -70,7 +101,9 @@ public class Admin extends User {
 	}
 
 	private void fillUserRegister(){
-		registerUser(scanStringWithMessage("Enter new user ID: "),scanStringWithMessage("Enter new user password: "));
+		registerUser(scanStringWithMessage(nextLine() + "Enter new user ID: " + nextLine()),
+					scanStringWithMessage(nextLine() + "Enter new user password: " + nextLine()));
+		
 	}
 	
 	private void deleteUser(){
@@ -102,9 +135,9 @@ public class Admin extends User {
 
 	private void selectGenre() throws InvalidGenreException,NoGendersException{
 		viewGenres();
-		List <Comic> filteredComics = getComicsByGender(scanStringWithMessage("Type a genre from the list"));
+		List <Comic> filteredComics = getComicsByGender(scanStringWithMessage(nextLine() + "Type a genre from the list") + nextLine());
 		if(filteredComics.isEmpty())
-			throw new InvalidGenreException("The genre is invalid");
+			throw new InvalidGenreException(nextLine() + "The genre is invalid" + nextLine());
 		else
 			viewFilteredcomics(filteredComics);
 	}
@@ -132,8 +165,23 @@ public class Admin extends User {
 	private void viewGenres() throws NoGendersException {
 		Set<String> genres = getGenres();
 		if(genres.isEmpty())
-			throw new NoGendersException("There isn't any gender in the catalog" + nextLine());
+			throw new NoGendersException(nextLine() + "There isn't any gender in the catalog" + nextLine());
 		else
 			genres.stream().forEach(genre -> System.out.println(genre + nextLine()));
+	}
+
+	public void editUsername(String actualId, String newId) {
+		getCatalog().getUsers().stream().filter(user -> user.getId().equals(actualId)).findFirst().get().setId(newId);
+	}
+
+	public void editPassword(String id, String newPassword) {
+		getCatalog().getUsers().stream().filter(user -> user.getId().equals(id)).findFirst().get().setPassword(newPassword);	
+	}
+	
+	private int editOptionSelection() throws InvalidOptionException{
+		int option = scanIntOption();
+		if(!(option > 0 && option < 3))
+			throw new InvalidOptionException();
+		return option;
 	}
 }
