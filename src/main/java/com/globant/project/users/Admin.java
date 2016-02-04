@@ -5,6 +5,8 @@ import java.util.Set;
 
 import com.globant.project.catalog.Catalog;
 import com.globant.project.comic.Comic;
+import com.globant.project.exception.NoGendersException;
+import com.globant.project.exceptions.InvalidGenreException;
 
 public class Admin extends User {
 
@@ -62,10 +64,6 @@ public class Admin extends User {
 	public Comic searchComic(String aName) {
 		return getCatalog().searchComic(aName);
 	}
-
-	public Set<Comic> getComics() {
-		return getCatalog().getComics();
-	}
 	
 	private Catalog getCatalog(){
 		return Catalog.getInstance();
@@ -88,11 +86,31 @@ public class Admin extends User {
 	private void viewCatalogPreference(int option) {
 		switch (option) {
 		case 1:
-			getComics().stream().forEach(comic -> System.out.println(comic.getName() + nextLine()));
+			showComics();
 			break;
+		case 2:
+			try{ selectGenre(); }
+			catch (InvalidGenreException|NoGendersException ex){ 
+				System.out.println(ex.getMessage()); 
+				viewCatalogMenu();
+			}
+			
 		default:
 			break;
 		}
+	}
+
+	private void selectGenre() throws InvalidGenreException,NoGendersException{
+		viewGenres();
+		List <Comic> filteredComics = getComicsByGender(scanStringWithMessage("Type a genre from the list"));
+		if(filteredComics.isEmpty())
+			throw new InvalidGenreException("The genre is invalid");
+		else
+			viewFilteredcomics(filteredComics);
+	}
+
+	private void viewFilteredcomics(List<Comic> filteredComics) {
+		filteredComics.stream().forEach(comic -> System.out.println(comic.getName() + nextLine()));
 	}
 
 	private void viewCatalogMenuOptions(){
@@ -102,7 +120,20 @@ public class Admin extends User {
 	public Set<String> getGenres() {
 		return getCatalog().getGenres();
 	}
-	
-	
 
+	public void editGenre(String actual, String changed) {
+		getCatalog().editGenre(actual, changed);
+	}
+
+	public List<Comic> getComicsByGender(String gender) {
+		return getCatalog().getComicsByGender(gender);
+	}
+	
+	private void viewGenres() throws NoGendersException {
+		Set<String> genres = getGenres();
+		if(genres.isEmpty())
+			throw new NoGendersException("There isn't any gender in the catalog" + nextLine());
+		else
+			genres.stream().forEach(genre -> System.out.println(genre + nextLine()));
+	}
 }

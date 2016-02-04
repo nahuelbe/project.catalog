@@ -26,7 +26,7 @@ public class Catalog {
 	}
 
 	public List<User> getUsers() {
-		return users.stream().collect(Collectors.toList());
+		return users;
 	}
 
 	public void addUser(User anUser) {
@@ -67,6 +67,14 @@ public class Catalog {
 	
 	public Set<String> getGenres() {
 		return comics.stream().map(comic -> comic.getGenre()).collect(Collectors.toSet());
+	}
+
+	public void editGenre(String actual, String changed) {
+		comics.stream().filter(comic -> comic.getGenre().equals(actual)).forEach(comic -> comic.setGenre(changed));
+	}
+
+	public List<Comic> getComicsByGender(String gender) {
+		return comics.stream().filter(comic -> comic.getGenre().equals(gender)).collect(Collectors.toList());
 	}
 
 

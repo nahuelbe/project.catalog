@@ -29,4 +29,8 @@ public class Comic {
 	public boolean equals(Comic aComic) {
 		return (name.equals(aComic.getName()));
 	}
+
+	public void setGenre(String aGenre) {
+		genre = aGenre;
+	}
 }

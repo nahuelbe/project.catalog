@@ -1,5 +1,7 @@
 package com.globant.project.users;
 
+import java.util.List;
+
 import com.globant.project.catalog.Catalog;
 import com.globant.project.comic.Comic;
 
@@ -69,6 +71,30 @@ public class AdminTest extends TestCase {
 		assertTrue(admin.getGenres().contains("Superheroes"));
 	}
 	
-	//public void testEdit
+	public void testWhenEditAnExistentGenreItChangesAllComicsWithThatGenre(){
+		admin.registerComic(new Comic("Spiderman","Superheres"));
+		admin.registerComic(new Comic("Batman","Superheres"));
+		admin.editGenre("Superheres","Superheroes");
+		assertTrue(admin.getGenres().contains("Superheroes"));
+		assertFalse(admin.getGenres().contains("Superheres"));
+		assertEquals(1,admin.getGenres().size());
+	}
+	
+	public void testViewOnlyComicsOfOneGenre(){
+		Comic spiderman = new Comic("spiderman","Superheroes"), batman = new Comic("batman","Superheroes"),
+				twd = new Comic("The walking dead", "Science fiction"), supercampeones = new Comic("Captain Tsubasa", "Sports"); 
+		admin.registerComic(spiderman);
+		admin.registerComic(batman);
+		admin.registerComic(twd);
+		admin.registerComic(supercampeones);
+		List<Comic> filteredComicsByGender = admin.getComicsByGender("Superheroes");
+		assertTrue(filteredComicsByGender.contains(spiderman));
+		assertTrue(filteredComicsByGender.contains(spiderman));
+		assertFalse(filteredComicsByGender.contains(twd));
+		assertFalse(filteredComicsByGender.contains(supercampeones));
+		assertEquals(2, filteredComicsByGender.size());
+	}
+	
+	
 	
 }
