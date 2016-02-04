@@ -1,15 +1,12 @@
 package com.globant.project.users;
 
 import java.util.List;
-import java.util.Scanner;
 import java.util.Set;
 
 import com.globant.project.catalog.Catalog;
 import com.globant.project.comic.Comic;
 
 public class Admin extends User {
-	
-
 
 	public Admin(String id, String pass) {
 		super(id, pass);
@@ -38,16 +35,23 @@ public class Admin extends User {
 	public void execute(int option) {
 		switch (option) {
 		case 1:
-		//	catalog.viewCatalog();
+			viewCatalogMenu();
 			break;
 		case 2:
-			fillRegister();
+			fillUserRegister();
 			break;
 		case 3:
 			deleteUser();
+			break;
+		case 4:
+			fillComicRegister();
 		default :
 			break;
 		}
+	}
+
+	private void fillComicRegister() {
+		registerComic(new Comic(scanStringWithMessage("Enter new Comic name: ")));
 	}
 
 	public void registerComic(Comic spidermanComic) {
@@ -66,24 +70,34 @@ public class Admin extends User {
 		return Catalog.getInstance();
 	}
 
-	public void removeUser(String anId) {
-		getUsers().remove(getUsers().stream().filter(user -> user.getId().equals(anId)).findFirst().get());
-	}
-	
-	private void fillRegister(){
-		Scanner scan = new Scanner(System.in);
-		System.out.println("Enter new user ID: ");
-		String id = scan.nextLine();
-		System.out.println("Enter new user password: ");
-		String password = scan.nextLine();
-		registerUser(id,password.toString());
+	private void fillUserRegister(){
+		registerUser(scanStringWithMessage("Enter new user ID: "),scanStringWithMessage("Enter new user password: "));
 	}
 	
 	private void deleteUser(){
-		Scanner scan = new Scanner(System.in);
-		System.out.println("Enter the ID to remove: ");
-		String id = scan.nextLine();
-		revokeUser(id);
+		revokeUser(scanStringWithMessage("Enter the ID to remove: "));
 	}
+	
+	private void viewCatalogMenu() {
+		System.out.println("Catalog visualization preference");
+		viewCatalogMenuOptions();
+		viewCatalogPreference(scanIntOption());
+	}
+	
+	private void viewCatalogPreference(int option) {
+		switch (option) {
+		case 1:
+			getComics().stream().forEach(comic -> System.out.println(comic.getName() + nextLine()));
+			break;
+		default:
+			break;
+		}
+	}
+
+	private void viewCatalogMenuOptions(){
+		System.out.println("1. View all comics" + nextLine() + "2. Sort by genre" + nextLine());
+	}
+	
+	
 
 }

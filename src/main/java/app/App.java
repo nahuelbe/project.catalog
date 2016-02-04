@@ -4,16 +4,16 @@ import com.globant.project.catalog.Catalog;
 import com.globant.project.exceptions.InvalidOptionException;
 import com.globant.project.exceptions.login.IncorrectIDException;
 import com.globant.project.exceptions.login.IncorrectPasswordException;
+import com.globant.project.interfaces.NextLiner;
+import com.globant.project.interfaces.Scanneable;
 import com.globant.project.users.User;
 
 import java.util.InputMismatchException;
-import java.util.Scanner;
 
-public class App 
+public class App implements Scanneable, NextLiner
 {
 	User loggedIn = null;
 	public static App app = new App();
-	private Catalog catalog = Catalog.getInstance();
 	
     public static void main( String[] args )
     {
@@ -38,15 +38,14 @@ public class App
     		showMenu();
     	}
     	catch (InputMismatchException e) {
-    		System.out.println(System.getProperty("line.separator") + 
-    		"You must enter a number as an option" + System.getProperty("line.separator"));
+    		System.out.println(nextLine() + 
+    		"You must enter a number as an option" + nextLine());
     		showMenu();
 		}
 	}
 
 	private int userSelection() throws InvalidOptionException{
-    	Scanner scan = new Scanner(System.in);
-    	int option = scan.nextInt();
+    	int option = scanIntOption();
     	if(option < 1 || option > 4)
     		throw new InvalidOptionException();
     	if(option == 4)
@@ -59,8 +58,7 @@ public class App
     }
 
 	private int adminSelection() throws InvalidOptionException{
-		Scanner scan = new Scanner(System.in);
-    	int option = scan.nextInt();
+    	int option = scanIntOption();
     	if(option < 1 || option > 8)
     		throw new InvalidOptionException();
     	if(option == 8)
@@ -69,9 +67,8 @@ public class App
 	}
 
 	private String standardWelcomeMsg(){
-    	String newLine = System.getProperty("line.separator");
-    	return "Welcome to Comics Catalog, please select an option:" + newLine
-    	+ "1. View Catalog" + newLine;
+    	return "Welcome to Comics Catalog, please select an option:" + nextLine()
+    	+ "1. View Catalog" + nextLine();
     }
     
     private void guestMsg(){
@@ -79,17 +76,15 @@ public class App
     }
     
     private void adminshowMenu(){
-    	String newLine = System.getProperty("line.separator");
-    	System.out.println(standardWelcomeMsg() + "2. Add user" + newLine + "3. Remove user"
-    			+ newLine + "4. Add Comic" + newLine + "5. Remove Comic" + newLine +
-    			"6. Remove Genre" + newLine + "7. Edit Genre" + newLine +
-    			"8. Logout" + newLine);
+    	System.out.println(standardWelcomeMsg() + "2. Add user" + nextLine() + "3. Remove user"
+    			+ nextLine() + "4. Add Comic" + nextLine() + "5. Remove Comic" + nextLine() +
+    			"6. Remove Genre" + nextLine() + "7. Edit Genre" + nextLine() +
+    			"8. Logout" + nextLine());
     }
     
     private void usershowMenu(){
-    	String newLine = System.getProperty("line.separator");
     	System.out.println(standardWelcomeMsg() + "2. View my loans" + 
-    			newLine + "3. Borrow a comic" + newLine + "4. Logout" + newLine);
+    			nextLine() + "3. Borrow a comic" + nextLine() + "4. Logout" + nextLine());
     }
     
     public void logOut(){
@@ -99,16 +94,14 @@ public class App
     
     @SuppressWarnings("unused")
 	private void guestOptions() throws InvalidOptionException{
-    	Scanner scan = new Scanner(System.in);
-    	int option = scan.nextInt();
-    	switch (option) {
+    	switch (scanIntOption()) {
 		case 1:
 			showComics();
 			break;
 		case 2:
 			try{ logIn(); } 
 			catch (IncorrectPasswordException|IncorrectIDException ex) { 
-				System.out.println(ex.getMessage()); 
+				System.out.println(nextLine() + ex.getMessage() + nextLine()); 
 				showMenu();
 			}
 			break;
@@ -120,12 +113,9 @@ public class App
     }
     
     private void logIn() throws IncorrectPasswordException,IncorrectIDException {
-    	Scanner scan = new Scanner(System.in);
-    	System.out.println("Username: ");
-    	String id = scan.nextLine();
-    	System.out.println("Password: ");
-    	String password = scan.nextLine();
-    	if(checkUserLogIn(id, password)){
+    	String id = scanStringWithMessage("Username: "), 
+    		   password = scanStringWithMessage("Password: ");
+    	if(checkUserLogIn(id,password)){
     		loggedIn = getUser(id, password);
     		System.out.println("Welcome " + id);
     		showMenu();
@@ -167,8 +157,8 @@ public class App
 			System.out.println(ex.getMessage());
 			showMenu(); } 
 		catch (InputMismatchException ex){
-			System.out.println(System.getProperty("line.separator") + 
-			"You must enter a valid number" + System.getProperty("line.separator"));
+			System.out.println(nextLine() + 
+			"You must enter a valid number" + nextLine());
 			showMenu();
 		}
 	}
@@ -178,6 +168,13 @@ public class App
 		try{ loggedIn.execute(userSelection()); } 
 		catch (InvalidOptionException ex) { 	
 			System.out.println(ex.getMessage());
+			showMenu();
+		}
+		catch (InputMismatchException ex){
+			System.out.println(nextLine() + 
+				"You must enter a valid number" + nextLine());
+			showMenu();
 		}
 	}
+
 }

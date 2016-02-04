@@ -1,6 +1,9 @@
 package com.globant.project.users;
 
-public class User{
+import com.globant.project.interfaces.NextLiner;
+import com.globant.project.interfaces.Scanneable;
+
+public class User implements Scanneable, NextLiner{
 	
 	String id, password;
 

@@ -62,4 +62,6 @@ public class Catalog {
 	public boolean userExists(String id, String password) {
 		return users.stream().anyMatch(user -> user.getId().equals(id));
 	}
+
+
 }
