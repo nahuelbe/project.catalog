@@ -69,4 +69,6 @@ public class AdminTest extends TestCase {
 		assertTrue(admin.getGenres().contains("Superheroes"));
 	}
 	
+	//public void testEdit
+	
 }

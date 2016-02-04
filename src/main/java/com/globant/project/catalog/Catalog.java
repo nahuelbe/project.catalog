@@ -1,5 +1,6 @@
 package com.globant.project.catalog;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,7 +13,7 @@ import com.globant.project.users.User;
 public class Catalog {
 	
 	private static Catalog singleton = new Catalog();
-	private Set<User> users = new HashSet<User>();
+	private List<User> users = new ArrayList<User>();
 	private Set<Comic> comics = new HashSet<Comic>();
 	
 	
@@ -33,7 +34,7 @@ public class Catalog {
 	}
 	
 	public static void emptyUsers(){
-		getInstance().users = new HashSet<User>();
+		getInstance().users = new ArrayList<User>();
 		getInstance().users.add(new Admin("Sheldon","Bazinga"));
 	}
 	
@@ -63,7 +64,7 @@ public class Catalog {
 	public boolean userExists(String id, String password) {
 		return users.stream().anyMatch(user -> user.getId().equals(id));
 	}
-
+	
 	public Set<String> getGenres() {
 		return comics.stream().map(comic -> comic.getGenre()).collect(Collectors.toSet());
 	}
