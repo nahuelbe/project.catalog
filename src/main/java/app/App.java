@@ -13,46 +13,38 @@ public class App
 {
 	User loggedIn = null;
 	public static App app = new App();
-	//private Catalog catalog = Catalog.getInstance();
+	private Catalog catalog = Catalog.getInstance();
 	
     public static void main( String[] args )
     {
     	while(true)
-    		app.welcomeMessage();
+    		app.showMenu();
     }
     
-    public void welcomeMessage(){
-    	
-    	if(loggedIn == null){
-    		guestMsg();
-    		guestOptions();
+    public void showMenu(){
+    	if(isThereAUserLoggedIn())
+    		showGuestMenu();
+    	else if(isAdminLoggedIn())
+    			showAdminMenu();
+    		else
+    			showUserMenu();
+    }
+    
+    private void showGuestMenu() {
+    	guestMsg();
+    	try{ guestOptions(); }
+    	catch (InvalidOptionException ex){
+    		System.out.println(ex.getMessage());
+    		showMenu();
     	}
-    	
-    	else if(loggedIn.getId().equals("Sheldon")){
-    			adminWelcomeMessage();
-    			try {
-    				int selectedOption = adminSelection();
-    				execute(selectedOption);
-    			} catch (InvalidOptionException ex){
-    				System.out.println(ex.getMessage());
-    				welcomeMessage();
-    			} catch (InputMismatchException ex){
-    				System.out.println(System.getProperty("line.separator") + 
-    						"You must enter a valid number" + System.getProperty("line.separator"));
-    				welcomeMessage();
-    			}
-    		}
-    		else{
-    			userWelcomeMessage();
-    			try{
-    				int selectedOption = userSelection();
-    				loggedIn.execute(selectedOption);
-    			} catch (InvalidOptionException ex) { 
-    				System.out.println(ex.getMessage());}
-    		}
-    }
-    
-    private int userSelection() throws InvalidOptionException{
+    	catch (InputMismatchException e) {
+    		System.out.println(System.getProperty("line.separator") + 
+    		"You must enter a number as an option" + System.getProperty("line.separator"));
+    		showMenu();
+		}
+	}
+
+	private int userSelection() throws InvalidOptionException{
     	Scanner scan = new Scanner(System.in);
     	int option = scan.nextInt();
     	if(option < 1 || option > 4)
@@ -86,7 +78,7 @@ public class App
     	System.out.println(standardWelcomeMsg() + "2. Login");
     }
     
-    private void adminWelcomeMessage(){
+    private void adminshowMenu(){
     	String newLine = System.getProperty("line.separator");
     	System.out.println(standardWelcomeMsg() + "2. Add user" + newLine + "3. Remove user"
     			+ newLine + "4. Add Comic" + newLine + "5. Remove Comic" + newLine +
@@ -94,7 +86,7 @@ public class App
     			"8. Logout" + newLine);
     }
     
-    private void userWelcomeMessage(){
+    private void usershowMenu(){
     	String newLine = System.getProperty("line.separator");
     	System.out.println(standardWelcomeMsg() + "2. View my loans" + 
     			newLine + "3. Borrow a comic" + newLine + "4. Logout" + newLine);
@@ -102,10 +94,11 @@ public class App
     
     public void logOut(){
     	loggedIn = null;
-    	welcomeMessage();
+    	showMenu();
     }
     
-    private void guestOptions(){
+    @SuppressWarnings("unused")
+	private void guestOptions() throws InvalidOptionException{
     	Scanner scan = new Scanner(System.in);
     	int option = scan.nextInt();
     	switch (option) {
@@ -116,12 +109,12 @@ public class App
 			try{ logIn(); } 
 			catch (IncorrectPasswordException|IncorrectIDException ex) { 
 				System.out.println(ex.getMessage()); 
-				welcomeMessage();
+				showMenu();
 			}
 			break;
-
 		default:
-			
+			if(true)
+				throw new InvalidOptionException();
 			break;
     	}
     }
@@ -135,7 +128,7 @@ public class App
     	if(checkUserLogIn(id, password)){
     		loggedIn = getUser(id, password);
     		System.out.println("Welcome " + id);
-    		welcomeMessage();
+    		showMenu();
     	}
     	else if (userExists(id, password))
     		throw new IncorrectPasswordException();
@@ -158,4 +151,33 @@ public class App
 	private void showComics(){
     	Catalog.getInstance().getComics();
     }
+	
+	private boolean isThereAUserLoggedIn(){
+		return loggedIn == null;
+	}
+	
+	private boolean isAdminLoggedIn(){
+		return loggedIn.getId().equals("Sheldon");
+	}
+	
+	private void showAdminMenu(){
+		adminshowMenu();
+		try { execute(adminSelection()); } 
+		catch (InvalidOptionException ex){
+			System.out.println(ex.getMessage());
+			showMenu(); } 
+		catch (InputMismatchException ex){
+			System.out.println(System.getProperty("line.separator") + 
+			"You must enter a valid number" + System.getProperty("line.separator"));
+			showMenu();
+		}
+	}
+	
+	private void showUserMenu(){
+		usershowMenu();
+		try{ loggedIn.execute(userSelection()); } 
+		catch (InvalidOptionException ex) { 	
+			System.out.println(ex.getMessage());
+		}
+	}
 }

@@ -9,14 +9,14 @@ import com.globant.project.comic.Comic;
 
 public class Admin extends User {
 	
-	Catalog catalog = Catalog.getInstance();
+
 
 	public Admin(String id, String pass) {
 		super(id, pass);
 	}
 
 	public void registerUser(String id, String password) {
-		catalog.addUser(new User(id,password));
+		getCatalog().addUser(new User(id,password));
 	}
 
 	public void revokeUser(String aName) {
@@ -32,7 +32,7 @@ public class Admin extends User {
 	}
 	
 	public List<User> getUsers(){
-		return catalog.getUsers();
+		return getCatalog().getUsers();
 	}
 	
 	public void execute(int option) {
@@ -41,31 +41,49 @@ public class Admin extends User {
 		//	catalog.viewCatalog();
 			break;
 		case 2:
-			Scanner scan = new Scanner(System.in);
-			System.out.println("Enter new user ID: ");
-			String id = scan.nextLine();
-			System.out.println("Enter new user password: ");
-			String password = scan.nextLine();
-			registerUser(id,password.toString());
+			fillRegister();
+			break;
+		case 3:
+			deleteUser();
 		default :
 			break;
 		}
 	}
 
 	public void registerComic(Comic spidermanComic) {
-		catalog.registerComic(spidermanComic);
+		getCatalog().registerComic(spidermanComic);
 	}
 
 	public Comic searchComic(String aName) {
-		return catalog.searchComic(aName);
+		return getCatalog().searchComic(aName);
 	}
 
 	public Set<Comic> getComics() {
-		return catalog.getComics();
+		return getCatalog().getComics();
+	}
+	
+	private Catalog getCatalog(){
+		return Catalog.getInstance();
 	}
 
 	public void removeUser(String anId) {
 		getUsers().remove(getUsers().stream().filter(user -> user.getId().equals(anId)).findFirst().get());
+	}
+	
+	private void fillRegister(){
+		Scanner scan = new Scanner(System.in);
+		System.out.println("Enter new user ID: ");
+		String id = scan.nextLine();
+		System.out.println("Enter new user password: ");
+		String password = scan.nextLine();
+		registerUser(id,password.toString());
+	}
+	
+	private void deleteUser(){
+		Scanner scan = new Scanner(System.in);
+		System.out.println("Enter the ID to remove: ");
+		String id = scan.nextLine();
+		revokeUser(id);
 	}
 
 }
