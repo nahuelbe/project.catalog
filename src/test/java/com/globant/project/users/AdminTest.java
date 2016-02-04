@@ -22,11 +22,9 @@ public class AdminTest extends TestCase {
 	}
 	
 	public void testAdminCanRegisterAnUserInAnEmptyCatalog(){
-		//Catalog.emptyUsers();
-		//admin.registerUser("Nahue","sarasa");
 		admin.registerUser("Batman","bati");
 		assertFalse(admin.getUsers().isEmpty());
-		assertEquals(2, admin.getUsers().size());
+		assertEquals(3, admin.getUsers().size());
 		assertEquals("Nahue", admin.getUser("Nahue").getId());
 		assertEquals("sarasa", admin.getUser("Nahue").getPassword());
 		assertEquals("Batman", admin.getUser("Batman").getId());
@@ -48,18 +46,27 @@ public class AdminTest extends TestCase {
 	}
 	
 	public void testAnAdminCanAddAComicToAnEmptyCatalog(){
-		Comic spidermanComic = new Comic("Spiderman");
+		Comic spidermanComic = new Comic("Spiderman","Superheroes");
 		admin.registerComic(spidermanComic);
 		assertEquals(spidermanComic, admin.searchComic("Spiderman"));
 		assertEquals(1, admin.searchComic("Spiderman").getCopies());
 	}
 	
 	public void testWhenAnAdminAddsAnExistentComicItIncreasesItsCopiesByOne(){
-		Comic spidermanComic = new Comic("Spiderman");
-		Comic otherSpidermanComic = new Comic("Spiderman");
+		Comic spidermanComic = new Comic("Spiderman","Superheroes");
+		Comic otherSpidermanComic = new Comic("Spiderman","Superheroes");
 		admin.registerComic(spidermanComic);
 		admin.registerComic(otherSpidermanComic);
 		assertEquals(2, admin.searchComic("Spiderman").getCopies());
+	}
+	
+	public void testGetCorrectGenresOfRegisteredComics(){
+		admin.registerComic(new Comic("Spiderman","Superheroes"));
+		admin.registerComic(new Comic("The walking dead", "Science fiction"));
+		admin.registerComic(new Comic("Daredevil","Superheroes"));
+		assertEquals(2, admin.getGenres().size());
+		assertTrue(admin.getGenres().contains("Science fiction"));
+		assertTrue(admin.getGenres().contains("Superheroes"));
 	}
 	
 }

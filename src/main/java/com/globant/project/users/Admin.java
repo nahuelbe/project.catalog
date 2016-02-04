@@ -51,7 +51,8 @@ public class Admin extends User {
 	}
 
 	private void fillComicRegister() {
-		registerComic(new Comic(scanStringWithMessage("Enter new Comic name: ")));
+		registerComic(new Comic(scanStringWithMessage("Enter new Comic name: "),
+						scanStringWithMessage("Enter gender of new comic: ")));
 	}
 
 	public void registerComic(Comic spidermanComic) {
@@ -96,6 +97,10 @@ public class Admin extends User {
 
 	private void viewCatalogMenuOptions(){
 		System.out.println("1. View all comics" + nextLine() + "2. Sort by genre" + nextLine());
+	}
+
+	public Set<String> getGenres() {
+		return getCatalog().getGenres();
 	}
 	
 	

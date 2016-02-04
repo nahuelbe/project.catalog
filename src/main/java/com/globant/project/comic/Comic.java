@@ -2,19 +2,24 @@ package com.globant.project.comic;
 
 public class Comic {
 	
-	String name;
+	String name, genre;
 	int copies = 1;
 	
-	public Comic(String aName){
-		name = aName;
+	public Comic(String name, String genre) {
+		this.name = name;
+		this.genre = genre;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
 	
 	public int getCopies(){
 		return copies;
+	}
+	
+	public String getGenre(){
+		return genre;
 	}
 	
 	public void addCopy(){

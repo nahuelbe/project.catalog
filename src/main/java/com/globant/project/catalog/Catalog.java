@@ -1,9 +1,9 @@
 package com.globant.project.catalog;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.globant.project.comic.Comic;
 import com.globant.project.users.Admin;
@@ -12,7 +12,7 @@ import com.globant.project.users.User;
 public class Catalog {
 	
 	private static Catalog singleton = new Catalog();
-	private List<User> users = new ArrayList<User>();
+	private Set<User> users = new HashSet<User>();
 	private Set<Comic> comics = new HashSet<Comic>();
 	
 	
@@ -25,7 +25,7 @@ public class Catalog {
 	}
 
 	public List<User> getUsers() {
-		return users;
+		return users.stream().collect(Collectors.toList());
 	}
 
 	public void addUser(User anUser) {
@@ -33,7 +33,8 @@ public class Catalog {
 	}
 	
 	public static void emptyUsers(){
-		getInstance().users = new ArrayList<User>();
+		getInstance().users = new HashSet<User>();
+		getInstance().users.add(new Admin("Sheldon","Bazinga"));
 	}
 	
 	public static void emptyComics(){
@@ -61,6 +62,10 @@ public class Catalog {
 
 	public boolean userExists(String id, String password) {
 		return users.stream().anyMatch(user -> user.getId().equals(id));
+	}
+
+	public Set<String> getGenres() {
+		return comics.stream().map(comic -> comic.getGenre()).collect(Collectors.toSet());
 	}
 
 
