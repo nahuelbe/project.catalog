@@ -1,9 +1,12 @@
 package com.globant.project.users;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 import com.globant.project.catalog.Catalog;
 import com.globant.project.comic.Comic;
 import com.globant.project.exceptions.InvalidGenreException;
+import com.globant.project.exceptions.UserExistsException;
 import com.globant.project.loan.Loan;
 
 
@@ -13,8 +16,11 @@ public class Admin extends User {
 		super(id, pass);
 	}
 
-	public void registerUser(String id, String password) {
-		getCatalog().addUser(new User(id,password));
+	public void registerUser(String id, String password) throws UserExistsException {
+		if(getUsers().stream().filter(user -> user.getId().equals(id)).collect(Collectors.toList()).isEmpty())
+			getCatalog().addUser(new User(id,password));
+		else
+			throw new UserExistsException("User already exists");
 	}
 
 	public boolean revokeUser(String aName) {

@@ -5,6 +5,7 @@ import java.util.List;
 import com.globant.project.catalog.Catalog;
 import com.globant.project.comic.Comic;
 import com.globant.project.exceptions.InvalidGenreException;
+import com.globant.project.exceptions.UserExistsException;
 
 import junit.framework.TestCase;
 
@@ -24,7 +25,7 @@ public class AdminTest extends TestCase {
 		Catalog.emptyComics();
 	}
 	
-	public void testAdminCanRegisterAnUserInAnEmptyCatalog(){
+	public void testAdminCanRegisterAnUserInAnEmptyCatalog() throws UserExistsException{
 		admin.registerUser("Batman","bati");
 		assertFalse(admin.getUsers().isEmpty());
 		assertEquals(3, admin.getUsers().size());
