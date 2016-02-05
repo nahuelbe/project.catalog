@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import com.globant.project.comic.Comic;
 import com.globant.project.exceptions.InvalidGenreException;
 import com.globant.project.users.Admin;
+import com.globant.project.loan.Loan;
 import com.globant.project.users.User;
 
 public class Catalog {
@@ -16,6 +17,7 @@ public class Catalog {
 	private static Catalog singleton = new Catalog();
 	private List<User> users = new ArrayList<User>();
 	private Set<Comic> comics = new HashSet<Comic>();
+	private List<Loan> loans = new ArrayList<>();
 	
 	
 	private Catalog(){
@@ -73,7 +75,7 @@ public class Catalog {
 	public void editGenre(String actual, String changed) throws InvalidGenreException {
 		List<Comic> comics = getComicsByGenre(actual);
 		if(comics.isEmpty())
-			throw new InvalidGenreException("El género no existe.");
+			throw new InvalidGenreException("Genre doesn't exist");
 		comics.stream().forEach(comic -> comic.setGenre(changed));
 	}
 
@@ -85,7 +87,19 @@ public class Catalog {
 		if(getGenres().contains(aGenre))
 			comics = comics.stream().filter(comic -> !comic.getGenre().equals(aGenre)).collect(Collectors.toSet());
 		else
-			throw new InvalidGenreException("El género no existe.");
+			throw new InvalidGenreException("Genre doesn't exist");
+	}
+
+	public List<Loan> getLoans() {
+		return loans;
+	}
+
+	public void addLoan(Loan loan) {
+		loans.add(loan);
+	}
+
+	public void removeCopy(String name) {
+		comics.stream().filter(comic -> comic.getName().equals(name)).findFirst().get().removeCopy();
 	}
 
 }

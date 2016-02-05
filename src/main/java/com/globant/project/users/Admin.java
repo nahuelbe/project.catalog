@@ -4,6 +4,7 @@ import java.util.List;
 import com.globant.project.catalog.Catalog;
 import com.globant.project.comic.Comic;
 import com.globant.project.exceptions.InvalidGenreException;
+import com.globant.project.loan.Loan;
 
 
 public class Admin extends User {
@@ -66,6 +67,10 @@ public class Admin extends User {
 
 	public void removeGenre(String string) throws InvalidGenreException {
 		getCatalog().removeGenre(string);
+	}
+
+	public List<Loan> getLoans() {
+		return getCatalog().getLoans();
 	}
 	
 }

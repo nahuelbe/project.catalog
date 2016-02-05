@@ -147,7 +147,13 @@ public class App implements Scanneable, NextLiner
     }
 
 	private void showComics(){
-    	Catalog.getInstance().getComics().stream().forEach(comic -> System.out.println(comic.getName()));;
+		if(Catalog.getInstance().getComics().isEmpty())
+			System.out.println(nextLine() + "There isn't any comic yet" + nextLine());
+		else{
+			System.out.println(nextLine());
+	    	Catalog.getInstance().getComics().stream().forEach(comic -> System.out.println(comic.getName()));
+	    	System.out.println(nextLine());
+    	}
     }
 	
 	private boolean isThereAUserLoggedIn(){
@@ -202,21 +208,28 @@ public class App implements Scanneable, NextLiner
 	
 	private void fillGenreEdit() {
 		try{
-			getAdmin().editGenre(scanStringWithMessage("Enter genre to modify: "), 
-				scanStringWithMessage("Enter genre to modify")); 
-			System.out.println(nextLine() + "Genre modified successfully");
+			Set<String> genres = getAdmin().getGenres();
+			if(genres.isEmpty())
+				System.out.println(nextLine() + "There isn't any genre");
+			else{
+				getAdmin().getGenres().forEach(genre -> System.out.println(genre));
+				getAdmin().editGenre(scanStringWithMessage(nextLine() + "Enter genre to modify: "), 
+					scanStringWithMessage("Enter new genre:")); 
+				System.out.println(nextLine() + "Genre modified successfully");
+			}
 		} 
 		catch (InvalidGenreException ex){
-			System.out.println(ex.getMessage());
+			System.out.println(nextLine() + ex.getMessage());
 			showMenu();
 		}
 	}
 
 	private void fillGenreRemove() {
 		try {
-			getAdmin().removeGenre(scanStringWithMessage("Enter genre to remove: "));
+			getAdmin().removeGenre(scanStringWithMessage(nextLine() + "Enter genre to remove: "));
+			System.out.println(nextLine() + "Genre removed successfully");
 		} catch (InvalidGenreException e) {
-			System.out.println(e.getMessage());
+			System.out.println(nextLine() + e.getMessage());
 			showMenu();
 		}
 	}
@@ -257,8 +270,7 @@ public class App implements Scanneable, NextLiner
 	}
 	
 	private void showUserLoans() {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
 
 	private void showCatalogMenu() {
@@ -324,8 +336,8 @@ public class App implements Scanneable, NextLiner
 		try{
 			switch (editOptionSelection()) {
 			case 1:
-				getAdmin().editUsername(scanStringWithMessage("Enter the actual user ID"), 
-						scanStringWithMessage("Enter the new user ID"));
+				getAdmin().editUsername(scanStringWithMessage(nextLine() + "Enter the actual user ID"), 
+						scanStringWithMessage(nextLine() + "Enter the new user ID"));
 				break;
 			case 2:
 				getAdmin().editPassword(scanStringWithMessage("Enter the ID to change the password: " ), 
@@ -369,7 +381,15 @@ public class App implements Scanneable, NextLiner
 	}
 	
 	private void deleteUser(){
-		if(getAdmin().revokeUser(scanStringWithMessage("Enter the ID to remove: ")))
+		System.out.println("");
+		getAdmin().getUsers().stream().filter(user -> !user.getId().equals("Sheldon")).forEach(user -> System.out.println(user.getId()));
+		System.out.println("");
+		String idToRemove = scanStringWithMessage("Enter the ID to remove: ");
+		if(idToRemove.equals("Sheldon")){
+			System.out.println(nextLine() + "You can't remove yourself");
+			showMenu();
+		}
+		else if(getAdmin().revokeUser(idToRemove))
 			System.out.println(nextLine() + "User removed successfully");
 		else
 			System.out.println(nextLine() + "The user doesn't exist");
@@ -378,6 +398,7 @@ public class App implements Scanneable, NextLiner
 	private void fillComicRegister() {
 		getAdmin().registerComic(new Comic(scanStringWithMessage(nextLine() + "Enter new Comic name: "),
 						scanStringWithMessage("Enter genre of new comic: ")));
+		System.out.println(nextLine() + "Comic added successfully");
 	}
 	
 	private Admin getAdmin(){
