@@ -5,6 +5,7 @@ import com.globant.project.comic.Comic;
 import com.globant.project.exceptions.InvalidGenreException;
 import com.globant.project.exceptions.InvalidOptionException;
 import com.globant.project.exceptions.NoGendersException;
+import com.globant.project.exceptions.NoMoreComicsException;
 import com.globant.project.exceptions.login.IncorrectIDException;
 import com.globant.project.exceptions.login.IncorrectPasswordException;
 import com.globant.project.interfaces.NextLiner;
@@ -54,10 +55,8 @@ public class App implements Scanneable, NextLiner
 
 	private int userSelection() throws InvalidOptionException{
     	int option = scanIntOption();
-    	if(option < 1 || option > 4)
+    	if(option < 1 || option > 5)
     		throw new InvalidOptionException();
-    	if(option == 4)
-    		logOut();
 		return option;
 	}
 
@@ -65,8 +64,6 @@ public class App implements Scanneable, NextLiner
     	int option = scanIntOption();
     	if(option < 1 || option > 9)
     		throw new InvalidOptionException();
-    	if(option == 9)
-    		logOut();
     	return option;
 	}
 
@@ -88,7 +85,7 @@ public class App implements Scanneable, NextLiner
     
     private void usershowMenu(){
     	System.out.println(standardWelcomeMsg() + "2. View my loans" + 
-    			nextLine() + "3. Borrow a comic" + nextLine() + "4. Logout" + nextLine());
+    			nextLine() + "3. Borrow a comic" + nextLine() + "4. Return a comic" + nextLine() + "5. Logout" + nextLine());
     }
     
     public void logOut(){
@@ -192,6 +189,8 @@ public class App implements Scanneable, NextLiner
 			case 8:
 				fillGenreEdit();
 				break;
+			case 9:
+	    		logOut();
 			default :
 				break;
 			}
@@ -254,6 +253,15 @@ public class App implements Scanneable, NextLiner
 				break;
 			case 2:
 				showUserLoans();
+				break;
+			case 3:
+				borrowAComic();
+				break;
+			case 4:
+				returnAComic();
+				break;
+			case 5:
+				logOut();
 			default:
 				break;
 			}; 
@@ -269,8 +277,21 @@ public class App implements Scanneable, NextLiner
 		}
 	}
 	
+	private void returnAComic() {
+		loggedIn.returnComic(scanStringWithMessage("Enter comic name to return: "));
+	}
+
+	private void borrowAComic() {
+		try {
+			loggedIn.borrowComic(scanStringWithMessage("Enter comic name to borrow"));
+		} catch (NoMoreComicsException e) {
+			System.out.println(e.getMessage() + nextLine());
+		}
+	}
+
 	private void showUserLoans() {
-		// TODO Auto-generated method stub		
+		loggedIn.getLoans().forEach(loan -> System.out.println( loan.getComic().getName() ));
+		nextLine();
 	}
 
 	private void showCatalogMenu() {

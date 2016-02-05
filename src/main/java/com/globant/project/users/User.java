@@ -3,9 +3,11 @@ package com.globant.project.users;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.globant.project.catalog.Catalog;
 import com.globant.project.comic.Comic;
+import com.globant.project.exceptions.NoMoreComicsException;
 import com.globant.project.interfaces.NextLiner;
 import com.globant.project.interfaces.Scanneable;
 import com.globant.project.loan.Loan;
@@ -48,11 +50,17 @@ public class User implements Scanneable, NextLiner{
 		return Catalog.getInstance().getGenres();
 	}
 
-	public void borrowComic(Comic aComic) {
-		Loan loan = new Loan(this,aComic);
-		loans.add(loan);
-		Catalog.getInstance().addLoan(loan);
-		Catalog.getInstance().removeCopy(aComic.getName());
+	public void borrowComic(String comicName) throws NoMoreComicsException {
+		Comic aComic = Catalog.getInstance().getComics().stream().filter(comic -> comic.getName().equals(comicName)).findFirst().get();
+		if(aComic.getCopies() > 0){
+			Loan loan = new Loan(this,aComic);
+			loans.add(loan);
+			Catalog.getInstance().addLoan(loan);
+			Catalog.getInstance().removeCopy(aComic.getName());
+		}
+		else{
+			throw new NoMoreComicsException("No more comics are available.");
+		}
 	}
 
 	public List<Loan> getLoans() {
@@ -60,7 +68,16 @@ public class User implements Scanneable, NextLiner{
 	}
 
 	public boolean hasBorrowedComic(Comic spidermanComic) {
-		return loans.stream().anyMatch(loan -> loan.getComic().equals(spidermanComic.getName()));
+		return loans.stream().anyMatch(loan -> loan.getComic().getName().equals(spidermanComic.getName()));
+	}
+
+	public void returnComic(String comicName) {
+		loans = loans.stream().filter(loan -> !loan.getComic().getName().equals(comicName)).collect(Collectors.toList());
+		Catalog.getInstance().returnComic(comicName);
+	}
+	
+	public void removeLoan(Loan aLoan){
+		loans.remove(aLoan);
 	}
 
 }

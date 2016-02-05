@@ -84,8 +84,10 @@ public class Catalog {
 	}
 
 	public void removeGenre(String aGenre) throws InvalidGenreException {
-		if(getGenres().contains(aGenre))
+		if(getGenres().contains(aGenre)){
 			comics = comics.stream().filter(comic -> !comic.getGenre().equals(aGenre)).collect(Collectors.toSet());
+			loans.stream().filter(loan -> loan.getComic().getGenre().equals(aGenre)).forEach(loan -> loan.getUser().removeLoan(loan));
+		}
 		else
 			throw new InvalidGenreException("Genre doesn't exist");
 	}
@@ -100,6 +102,23 @@ public class Catalog {
 
 	public void removeCopy(String name) {
 		comics.stream().filter(comic -> comic.getName().equals(name)).findFirst().get().removeCopy();
+	}
+
+	public static void emptyLoans() {
+		singleton.loans = new ArrayList<>();
+	}
+
+	public boolean containsComic(String comicName) {
+		return comics.stream().map(comic -> comic.getName()).collect(Collectors.toList()).contains(comicName);
+	}
+
+	public void returnComic(String comicName) {
+		loans = loans.stream().filter(loan -> !loan.getComic().getName().equals(comicName)).collect(Collectors.toList());
+		searchComic(comicName).addCopy();
+	}
+	
+	public int borrowedComics(String comicName){
+		return loans.stream().filter(loan -> loan.getComic().getName().equals(comicName)).collect(Collectors.toList()).size();
 	}
 
 }
