@@ -87,7 +87,7 @@ public class AdminTest extends TestCase {
 		admin.registerComic(batman);
 		admin.registerComic(twd);
 		admin.registerComic(supercampeones);
-		List<Comic> filteredComicsByGender = admin.getComicsByGender("Superheroes");
+		List<Comic> filteredComicsByGender = admin.getComicsByGenre("Superheroes");
 		assertTrue(filteredComicsByGender.contains(spiderman));
 		assertTrue(filteredComicsByGender.contains(spiderman));
 		assertFalse(filteredComicsByGender.contains(twd));
@@ -100,6 +100,22 @@ public class AdminTest extends TestCase {
 		admin.editPassword("Duality","newPassword");
 		assertTrue(admin.userExist("Duality"));
 		assertFalse(admin.userExist("Nahue"));
+	}
+	
+	public void testRemoveOneCopyOfThreeSuccessfully(){
+		// TODO
+	}
+	
+	public void testRemoveUniqueCopySuccessfully(){
+		// TODO
+	}
+	
+	public void testRemovesGenreSuccessfully(){
+		// TODO		
+	}
+	
+	public void testEditsGenreAndAllOfItComicsSuccessfully(){
+		// TODO
 	}
 	
 }

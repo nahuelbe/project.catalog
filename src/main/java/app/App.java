@@ -1,14 +1,20 @@
 package app;
 
 import com.globant.project.catalog.Catalog;
+import com.globant.project.comic.Comic;
+import com.globant.project.exception.NoGendersException;
+import com.globant.project.exceptions.InvalidGenreException;
 import com.globant.project.exceptions.InvalidOptionException;
 import com.globant.project.exceptions.login.IncorrectIDException;
 import com.globant.project.exceptions.login.IncorrectPasswordException;
 import com.globant.project.interfaces.NextLiner;
 import com.globant.project.interfaces.Scanneable;
+import com.globant.project.users.Admin;
 import com.globant.project.users.User;
 
 import java.util.InputMismatchException;
+import java.util.List;
+import java.util.Set;
 
 public class App implements Scanneable, NextLiner
 {
@@ -53,10 +59,6 @@ public class App implements Scanneable, NextLiner
 		return option;
 	}
 
-	private void execute(int selectedOption) {
-    	loggedIn.execute(selectedOption);
-    }
-
 	private int adminSelection() throws InvalidOptionException{
     	int option = scanIntOption();
     	if(option < 1 || option > 9)
@@ -67,7 +69,7 @@ public class App implements Scanneable, NextLiner
 	}
 
 	private String standardWelcomeMsg(){
-    	return "Welcome to Comics Catalog, please select an option:" + nextLine()
+    	return nextLine() + "Welcome to Comics Catalog, please select an option:" + nextLine()
     	+ "1. View Catalog" + nextLine();
     }
     
@@ -79,7 +81,7 @@ public class App implements Scanneable, NextLiner
     	System.out.println(standardWelcomeMsg() + "2. Add user" + nextLine() + "3. Edit user" + 
     			nextLine() + "4. Remove user" + nextLine() + "5. Add Comic" + nextLine() + 
     			"6. Remove Comic" + nextLine() + "7. Remove Genre" + nextLine() + 
-    			"8. Edit Genre" + nextLine() + "9. Logout" + nextLine());
+    			"8. Edit Genre" + nextLine() + "9. Logout");
     }
     
     private void usershowMenu(){
@@ -96,7 +98,7 @@ public class App implements Scanneable, NextLiner
 	private void guestOptions() throws InvalidOptionException{
     	switch (scanIntOption()) {
 		case 1:
-			showComics();
+			showCatalogMenu();
 			break;
 		case 2:
 			try{ logIn(); } 
@@ -117,7 +119,7 @@ public class App implements Scanneable, NextLiner
     		   password = scanStringWithMessage("Password: ");
     	if(checkUserLogIn(id,password)){
     		loggedIn = getUser(id, password);
-    		System.out.println("Welcome " + id);
+    		System.out.println(nextLine() + "Welcome " + id);
     		showMenu();
     	}
     	else if (userExists(id, password))
@@ -139,7 +141,8 @@ public class App implements Scanneable, NextLiner
     }
 
 	private void showComics(){
-    	Catalog.getInstance().getComics();
+		System.out.println(nextLine());
+    	Catalog.getInstance().getComics().stream().forEach(comic -> System.out.println(comic.getName()));;
     }
 	
 	private boolean isThereAUserLoggedIn(){
@@ -152,7 +155,36 @@ public class App implements Scanneable, NextLiner
 	
 	private void showAdminMenu(){
 		adminshowMenu();
-		try { execute(adminSelection()); } 
+		try {
+			switch (adminSelection()) {
+			case 1:
+				showCatalogMenu();
+				break;
+			case 2:
+				fillUserRegister();
+				break;
+			case 3:
+				editUser();
+				break;
+			case 4:
+				deleteUser();
+				break;
+			case 5:
+				fillComicRegister();
+				break;
+			case 6:
+				fillComicRemove();
+				break;
+			case 7:
+				fillGenreRemove();
+				break;
+			case 8:
+				fillGenreEdit();
+				break;
+			default :
+				break;
+			}
+		}
 		catch (InvalidOptionException ex){
 			System.out.println(ex.getMessage());
 			showMenu(); } 
@@ -163,9 +195,33 @@ public class App implements Scanneable, NextLiner
 		}
 	}
 	
+	private void fillGenreEdit() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void fillGenreRemove() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void fillComicRemove() {
+		// TODO Auto-generated method stub
+		
+	}
+
 	private void showUserMenu(){
 		usershowMenu();
-		try{ loggedIn.execute(userSelection()); } 
+		try{ switch (userSelection()) {
+			case 1:
+				showCatalogMenu();
+				break;
+			case 2:
+				showUserLoans();
+			default:
+				break;
+			}; 
+		} 
 		catch (InvalidOptionException ex) { 	
 			System.out.println(ex.getMessage());
 			showMenu();
@@ -175,6 +231,113 @@ public class App implements Scanneable, NextLiner
 				"You must enter a valid number" + nextLine());
 			showMenu();
 		}
+	}
+	
+	private void showUserLoans() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void showCatalogMenu() {
+		System.out.println("Catalog visualization preference" + nextLine());
+		showCatalogMenuOptions();
+		showCatalogPreference(scanIntOption());
+	}
+	
+	private void showCatalogMenuOptions(){
+		System.out.println("1. View all comics" + nextLine() + "2. Sort by genre" + nextLine());
+	}
+	
+	private void showCatalogPreference(int option) {
+		switch (option) {
+		case 1:
+			showComics();
+			break;
+		case 2:
+			try{ selectGenre(); }
+			catch (InvalidGenreException|NoGendersException ex){ 
+				System.out.println(ex.getMessage()); 
+				showCatalogMenu();
+			}
+			
+		default:
+			break;
+		}
+	}
+	
+	private void selectGenre() throws InvalidGenreException,NoGendersException{
+		viewGenres();
+		List <Comic> filteredComics = loggedIn.getComicsByGenre(scanStringWithMessage("Type a genre from the list:" + nextLine()));
+		if(filteredComics.isEmpty())
+			throw new InvalidGenreException(nextLine() + "The genre is invalid" + nextLine());
+		else
+			showFilteredcomics(filteredComics);
+	}
+	
+	private void viewGenres() throws NoGendersException { 
+		Set<String> genres = loggedIn.getGenres();
+		if(genres.isEmpty())
+			throw new NoGendersException(nextLine() + "There isn't any gender in the catalog" + nextLine());
+		else
+			genres.stream().forEach(genre -> System.out.println(genre + nextLine()));
+	}
+	
+	private void fillUserRegister(){
+		getAdmin().registerUser(scanStringWithMessage(nextLine() + "Enter new user ID: " + nextLine()),
+					scanStringWithMessage(nextLine() + "Enter new user password: " + nextLine()));
+		
+	}
+	
+	private void editUser(){
+		showEditOptions();
+		try{
+			switch (editOptionSelection()) {
+			case 1:
+				break;
+			case 2:
+				break;
+			default:
+				break;
+			}
+		} 
+		catch (InputMismatchException ex){
+			System.out.println(nextLine() + 
+			"You must enter a valid number" + nextLine()); 
+			editUser();
+		}
+		catch (InvalidOptionException ex) {
+			System.out.println(ex.getMessage());
+			editUser();
+		}
+	}
+	
+	private void showEditOptions() {
+		System.out.println("1. Edit user ID" + nextLine() + "2. Edit user password");
+	}
+	
+	private int editOptionSelection() throws InvalidOptionException{
+		int option = scanIntOption();
+		if(!(option > 0 && option < 3))
+			throw new InvalidOptionException();
+		return option;
+	}
+	
+	private void showFilteredcomics(List<Comic> filteredComics) {
+		filteredComics.stream().forEach(comic -> System.out.println(comic.getName() + nextLine()));
+	}
+	
+	private void deleteUser(){
+		getAdmin().revokeUser(scanStringWithMessage("Enter the ID to remove: "));
+	}
+	
+	private void fillComicRegister() {
+		getAdmin().registerComic(new Comic(scanStringWithMessage(nextLine() + "Enter new Comic name: "),
+						scanStringWithMessage("Enter genre of new comic: ")));
+	}
+	
+	private Admin getAdmin(){
+		Admin admin = (Admin) loggedIn;
+		return admin;
 	}
 
 }

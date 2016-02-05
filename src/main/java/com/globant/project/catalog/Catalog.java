@@ -73,8 +73,8 @@ public class Catalog {
 		comics.stream().filter(comic -> comic.getGenre().equals(actual)).forEach(comic -> comic.setGenre(changed));
 	}
 
-	public List<Comic> getComicsByGender(String gender) {
-		return comics.stream().filter(comic -> comic.getGenre().equals(gender)).collect(Collectors.toList());
+	public List<Comic> getComicsByGenre(String genre) {
+		return comics.stream().filter(comic -> comic.getGenre().equals(genre)).collect(Collectors.toList());
 	}
 
 

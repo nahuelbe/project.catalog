@@ -1,5 +1,6 @@
 package com.globant.project.users;
 
+import java.util.List;
 import java.util.Set;
 
 import com.globant.project.catalog.Catalog;
@@ -28,26 +29,20 @@ public class User implements Scanneable, NextLiner{
 		return Catalog.getInstance().getComics();
 	}
 	
-	public void showComics(){
-		getComics().stream().forEach(comic -> System.out.println(comic.getName() + nextLine()));
-	}
-
-	public void execute(int selectedOption) {
-		switch (selectedOption) {
-		case 1:
-			showComics();
-			break;
-		default:
-			break;
-		}
-	}
-	
 	public void setPassword(String newPassword){
 		password = newPassword;
 	}
 
 	public void setId(String newId) {
 		id = newId;
+	}
+	
+	public List<Comic> getComicsByGenre(String genre) {
+		return Catalog.getInstance().getComicsByGenre(genre);
+	}
+
+	public Set<String> getGenres() {
+		return Catalog.getInstance().getGenres();
 	}
 
 }
