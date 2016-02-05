@@ -55,8 +55,11 @@ public class Admin extends User {
 		getCatalog().editGenre(actual, changed);
 	}
 	
-	public void editUsername(String actualId, String newId) {
-		getUsers().stream().filter(user -> user.getId().equals(actualId)).findFirst().get().setId(newId);
+	public void editUsername(String actualId, String newId) throws UserExistsException {
+		if(getUsers().stream().anyMatch(user -> user.getId().equals(newId)))
+			throw new UserExistsException("ID already taken");
+		else
+			getUsers().stream().filter(user -> user.getId().equals(actualId)).findFirst().get().setId(newId);
 	}
 
 	public void editPassword(String id, String newPassword) {

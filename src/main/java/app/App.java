@@ -64,7 +64,7 @@ public class App implements Scanneable, NextLiner
 
 	private int adminSelection() throws InvalidOptionException{
     	int option = scanIntOption();
-    	if(option < 1 || option > 10)
+    	if(option < 1 || option > 11)
     		throw new InvalidOptionException();
     	return option;
 	}
@@ -79,10 +79,10 @@ public class App implements Scanneable, NextLiner
     }
     
     private void adminshowMenu(){
-    	System.out.println(standardWelcomeMsg() + "2. Add user" + nextLine() + "3. Edit user" + 
-    			nextLine() + "4. Remove user" + nextLine() + "5. Add Comic" + nextLine() + 
-    			"6. Remove Comic" + nextLine() + "7. Remove Genre" + nextLine() + 
-    			"8. Edit Genre" + nextLine() + "9. View Loans" + nextLine() + "10. Logout" + nextLine());
+    	System.out.println(standardWelcomeMsg() + "2. View users" + nextLine() + "3. Add user" + nextLine() + "4. Edit user" + 
+    			nextLine() + "5. Remove user" + nextLine() + "6. Add Comic" + nextLine() + 
+    			"7. Remove Comic" + nextLine() + "8. Remove Genre" + nextLine() + 
+    			"9. Edit Genre" + nextLine() + "10. View Loans" + nextLine() + "11. Logout" + nextLine());
     }
     
     private void usershowMenu(){
@@ -171,29 +171,32 @@ public class App implements Scanneable, NextLiner
 				showCatalogMenu();
 				break;
 			case 2:
-				fillUserRegister();
+				showUsers();
 				break;
 			case 3:
-				editUser();
+				fillUserRegister();
 				break;
 			case 4:
-				deleteUser();
+				editUser();
 				break;
 			case 5:
-				fillComicRegister();
+				deleteUser();
 				break;
 			case 6:
-				fillComicRemove();
+				fillComicRegister();
 				break;
 			case 7:
-				fillGenreRemove();
+				fillComicRemove();
 				break;
 			case 8:
-				fillGenreEdit();
+				fillGenreRemove();
 				break;
 			case 9:
-				viewLoans();
+				fillGenreEdit();
+				break;
 			case 10:
+				viewLoans();
+			case 11:
 	    		logOut();
 			default :
 				break;
@@ -209,6 +212,17 @@ public class App implements Scanneable, NextLiner
 		}
 	}
 	
+	private void showUsers() {
+		if(getAdmin().getUsers().isEmpty()){
+			System.out.println(nextLine() + "There isn't any user" + nextLine());
+		}
+		else{
+			System.out.println("");
+			getAdmin().getUsers().stream().forEach(user -> System.out.println(user.getId()));
+			System.out.println("");
+		}
+	}
+
 	private void viewLoans() {
 		nextLine();
 		List<Loan> loans = getAdmin().getLoans();
@@ -370,11 +384,18 @@ public class App implements Scanneable, NextLiner
 	
 	private void editUser(){
 		showEditOptions();
+		showUsers();
 		try{
+			
 			switch (editOptionSelection()) {
 			case 1:
-				getAdmin().editUsername(scanStringWithMessage(nextLine() + "Enter the actual user ID:"), 
-						scanStringWithMessage("Enter the new user ID:"));
+				try {
+					getAdmin().editUsername(scanStringWithMessage(nextLine() + "Enter the actual user ID:"), 
+							scanStringWithMessage("Enter the new user ID:"));
+				} catch (UserExistsException e) {
+					System.out.println(nextLine() + e.getMessage() + nextLine());
+					editUser();
+				}
 				break;
 			case 2:
 				getAdmin().editPassword(scanStringWithMessage("Enter the ID to change the password: " ), 
