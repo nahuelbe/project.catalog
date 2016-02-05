@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.globant.project.catalog.Catalog;
 import com.globant.project.comic.Comic;
+import com.globant.project.exceptions.InvalidGenreException;
 
 import junit.framework.TestCase;
 
@@ -71,7 +72,7 @@ public class AdminTest extends TestCase {
 		assertTrue(admin.getGenres().contains("Superheroes"));
 	}
 	
-	public void testWhenEditAnExistentGenreItChangesAllComicsWithThatGenre(){
+	public void testWhenEditAnExistentGenreItChangesAllComicsWithThatGenre() throws InvalidGenreException{
 		admin.registerComic(new Comic("Spiderman","Superheres"));
 		admin.registerComic(new Comic("Batman","Superheres"));
 		admin.editGenre("Superheres","Superheroes");
@@ -103,19 +104,49 @@ public class AdminTest extends TestCase {
 	}
 	
 	public void testRemoveOneCopyOfThreeSuccessfully(){
-		// TODO
+		Comic spidermanComic = new Comic("spiderman","Superheroes");		
+		admin.registerComic(spidermanComic);
+		admin.registerComic(new Comic("spiderman","Superheroes"));
+		admin.registerComic(new Comic("spiderman","Superheroes"));
+		admin.removeComic("spiderman");
+		assertTrue(admin.getComics().contains(spidermanComic));
+		assertEquals(2,admin.searchComic("spiderman").getCopies());
 	}
 	
 	public void testRemoveUniqueCopySuccessfully(){
-		// TODO
+		Comic spidermanComic = new Comic("spiderman","Superheroes");
+		admin.registerComic(spidermanComic);
+		admin.removeComic("spiderman");
+		assertFalse(admin.getComics().contains(spidermanComic));
+		assertTrue(admin.getComics().isEmpty());
 	}
 	
-	public void testRemovesGenreSuccessfully(){
-		// TODO		
+	public void testRemovesGenreSuccessfully() throws InvalidGenreException{
+		Comic spidermanComic = new Comic("spiderman","Superheroes");
+		Comic batmanComic = new Comic("batman","Superheroes");
+		Comic twdComic = new Comic("The walking dead","Science Fiction");
+		Comic vikingsComic = new Comic("Vikings","Action");
+		admin.registerComic(spidermanComic);
+		admin.registerComic(batmanComic);
+		admin.registerComic(twdComic);
+		admin.registerComic(vikingsComic);
+		admin.removeGenre("Superheroes");
+		assertFalse(admin.getGenres().contains("Superheroes"));
+		assertFalse(admin.getComics().contains(spidermanComic));
+		assertFalse(admin.getComics().contains(batmanComic));
+		assertEquals(2,admin.getComics().size());
+		assertTrue(admin.getComics().contains(twdComic));
+		assertTrue(admin.getComics().contains(vikingsComic));
 	}
 	
-	public void testEditsGenreAndAllOfItComicsSuccessfully(){
-		// TODO
+	public void testEditsGenreAndAllOfItComicsSuccessfully() throws InvalidGenreException{
+		Comic spidermanComic = new Comic("spiderman","Superheroes");
+		Comic batmanComic = new Comic("batman","Superheroes");
+		admin.registerComic(spidermanComic);
+		admin.registerComic(batmanComic);
+		admin.editGenre("Superheroes", "super");
+		assertEquals("super",spidermanComic.getGenre());
+		assertEquals("super",batmanComic.getGenre());
 	}
 	
 }

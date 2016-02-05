@@ -3,6 +3,7 @@ package com.globant.project.users;
 import java.util.List;
 import com.globant.project.catalog.Catalog;
 import com.globant.project.comic.Comic;
+import com.globant.project.exceptions.InvalidGenreException;
 
 
 public class Admin extends User {
@@ -15,8 +16,8 @@ public class Admin extends User {
 		getCatalog().addUser(new User(id,password));
 	}
 
-	public void revokeUser(String aName) {
-			getUsers().removeIf(user -> user.getId().equals(aName));
+	public boolean revokeUser(String aName) {
+			return (getUsers().removeIf(user -> user.getId().equals(aName)));
 	}
 	
 	public boolean userExist(String aName){
@@ -43,7 +44,7 @@ public class Admin extends User {
 		return Catalog.getInstance();
 	}
 
-	public void editGenre(String actual, String changed) {
+	public void editGenre(String actual, String changed) throws InvalidGenreException {
 		getCatalog().editGenre(actual, changed);
 	}
 	
@@ -53,6 +54,18 @@ public class Admin extends User {
 
 	public void editPassword(String id, String newPassword) {
 		getUsers().stream().filter(user -> user.getId().equals(id)).findFirst().get().setPassword(newPassword);	
+	}
+
+	public void removeComic(String aName) {
+		Comic comicToRemove = searchComic(aName);
+		if(comicToRemove.getCopies() == 1)
+			getComics().remove(comicToRemove);
+		else
+			comicToRemove.removeCopy();
+	}
+
+	public void removeGenre(String string) throws InvalidGenreException {
+		getCatalog().removeGenre(string);
 	}
 	
 }

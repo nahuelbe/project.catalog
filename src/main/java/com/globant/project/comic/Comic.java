@@ -33,4 +33,8 @@ public class Comic {
 	public void setGenre(String aGenre) {
 		genre = aGenre;
 	}
+
+	public void removeCopy() {
+		copies = copies - 1;
+	}
 }

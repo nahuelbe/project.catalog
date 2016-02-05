@@ -1,4 +1,4 @@
-package com.globant.project.exception;
+package com.globant.project.exceptions;
 
 @SuppressWarnings("serial")
 public class NoGendersException extends Exception {

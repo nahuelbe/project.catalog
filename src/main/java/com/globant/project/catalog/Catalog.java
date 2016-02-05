@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.globant.project.comic.Comic;
+import com.globant.project.exceptions.InvalidGenreException;
 import com.globant.project.users.Admin;
 import com.globant.project.users.User;
 
@@ -69,13 +70,22 @@ public class Catalog {
 		return comics.stream().map(comic -> comic.getGenre()).collect(Collectors.toSet());
 	}
 
-	public void editGenre(String actual, String changed) {
-		comics.stream().filter(comic -> comic.getGenre().equals(actual)).forEach(comic -> comic.setGenre(changed));
+	public void editGenre(String actual, String changed) throws InvalidGenreException {
+		List<Comic> comics = getComicsByGenre(actual);
+		if(comics.isEmpty())
+			throw new InvalidGenreException("El género no existe.");
+		comics.stream().forEach(comic -> comic.setGenre(changed));
 	}
 
 	public List<Comic> getComicsByGenre(String genre) {
 		return comics.stream().filter(comic -> comic.getGenre().equals(genre)).collect(Collectors.toList());
 	}
 
+	public void removeGenre(String aGenre) throws InvalidGenreException {
+		if(getGenres().contains(aGenre))
+			comics = comics.stream().filter(comic -> !comic.getGenre().equals(aGenre)).collect(Collectors.toSet());
+		else
+			throw new InvalidGenreException("El género no existe.");
+	}
 
 }

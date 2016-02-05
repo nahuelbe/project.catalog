@@ -11,6 +11,10 @@ public class UserTest extends TestCase {
 		admin.registerUser("Nahue","sarasa");
 	}
 	
+	public void testSarasa(){
+		// TODO
+	}
+	
 	
 	
 }
