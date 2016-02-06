@@ -25,8 +25,7 @@ import java.util.Set;
 
 public class App implements Scanneable, NextLiner
 {
-	//User loggedIn = null;
-	User loggedIn = Catalog.getInstance().getUsers().get(0);
+	User loggedIn = null;
 	public static App app = new App();
 	public static boolean run = true;
 	
