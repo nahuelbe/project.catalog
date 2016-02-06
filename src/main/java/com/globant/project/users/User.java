@@ -71,9 +71,13 @@ public class User implements Scanneable, NextLiner{
 		return loans.stream().anyMatch(loan -> loan.getComic().getName().equals(spidermanComic.getName()));
 	}
 
-	public void returnComic(String comicName) {
-		loans = loans.stream().filter(loan -> !loan.getComic().getName().equals(comicName)).collect(Collectors.toList());
-		Catalog.getInstance().returnComic(comicName);
+	public void returnComic(String comicName) throws Exception {
+		if(loans.stream().anyMatch(loan -> loan.getComic().getName().equals(comicName))){
+			loans = loans.stream().filter(loan -> !loan.getComic().getName().equals(comicName)).collect(Collectors.toList());
+			Catalog.getInstance().returnComic(comicName);
+		}
+		else
+			throw new Exception("Return failed. You don't have that comic.");
 	}
 	
 	public void removeLoan(Loan aLoan){

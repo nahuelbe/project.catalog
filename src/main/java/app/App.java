@@ -3,10 +3,12 @@ package app;
 import com.globant.project.catalog.Catalog;
 import com.globant.project.comic.Comic;
 import com.globant.project.exceptions.InvalidGenreException;
-import com.globant.project.exceptions.InvalidOptionException;
-import com.globant.project.exceptions.NoGendersException;
+import com.globant.project.exceptions.NoGenreException;
 import com.globant.project.exceptions.NoMoreComicsException;
 import com.globant.project.exceptions.UserExistsException;
+import com.globant.project.exceptions.inputs.InvalidComicGenreException;
+import com.globant.project.exceptions.inputs.InvalidComicNameException;
+import com.globant.project.exceptions.inputs.InvalidOptionException;
 import com.globant.project.exceptions.login.IncorrectIDException;
 import com.globant.project.exceptions.login.IncorrectPasswordException;
 import com.globant.project.interfaces.NextLiner;
@@ -20,9 +22,11 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+
 public class App implements Scanneable, NextLiner
 {
-	User loggedIn = null;
+	//User loggedIn = null;
+	User loggedIn = Catalog.getInstance().getUsers().get(0);
 	public static App app = new App();
 	public static boolean run = true;
 	
@@ -70,8 +74,8 @@ public class App implements Scanneable, NextLiner
 	}
 
 	private String standardWelcomeMsg(){
-    	return "Welcome to Comics Catalog, please select an option:" + nextLine()
-    	+ "1. View Catalog" + nextLine();
+    	return "Welcome to Comics Catalog, please select an option:" + nextLine() + nextLine() +
+    	"1. View Catalog" + nextLine();
     }
     
     private void guestMsg(){
@@ -91,7 +95,7 @@ public class App implements Scanneable, NextLiner
     }
     
     public void logOut(){
-    	System.out.println(nextLine() + "Goodbye " + loggedIn.getId());
+    	System.out.println(nextLine() + "Goodbye " + loggedIn.getId() + nextLine());
     	loggedIn = null;
     	showMenu();
     }
@@ -147,11 +151,11 @@ public class App implements Scanneable, NextLiner
 
 	private void showComics(){
 		if(Catalog.getInstance().getComics().isEmpty())
-			System.out.println(nextLine() + "There isn't any comic yet");
+			System.out.println(nextLine() + "There isn't any comic yet" + nextLine());
 		else{
-			System.out.println(nextLine());
-	    	Catalog.getInstance().getComics().stream().forEach(comic -> System.out.println(comic.getName()));
-	    	System.out.println(nextLine());
+			System.out.println("");
+			System.out.println("Comic name - Genre - Copies available" + nextLine());
+	    	Catalog.getInstance().getComics().stream().forEach(comic -> System.out.println(comic.getName() + " - " + comic.getGenre() + " - " + comic.getCopies() + nextLine()));
     	}
     }
 	
@@ -196,8 +200,10 @@ public class App implements Scanneable, NextLiner
 				break;
 			case 10:
 				viewLoans();
+				break;
 			case 11:
 	    		logOut();
+	    		break;
 			default :
 				break;
 			}
@@ -218,30 +224,30 @@ public class App implements Scanneable, NextLiner
 		}
 		else{
 			System.out.println("");
-			getAdmin().getUsers().stream().forEach(user -> System.out.println(user.getId()));
-			System.out.println("");
+			getAdmin().getUsers().stream().forEach(user -> System.out.println(user.getId() +  nextLine()));
 		}
 	}
 
 	private void viewLoans() {
 		nextLine();
 		List<Loan> loans = getAdmin().getLoans();
-		if(!loans.isEmpty())
-			getAdmin().getLoans().forEach(loan -> System.out.println(loan.getUser() + " " + loan.getComic().getName()));
+		if(!loans.isEmpty()){
+			System.out.println(nextLine() + "Username - Comic borrowed" + nextLine());
+			getAdmin().getLoans().forEach(loan -> System.out.println(loan.getUser().getId() + " - " + loan.getComic().getName() + nextLine()));
+		}
 		else
-			System.out.println("There are no loans");
+			System.out.println(nextLine() + "There are no loans" + nextLine());
 	}
 
 	private void fillGenreEdit() {
+		showGenres();
 		try{
-			Set<String> genres = getAdmin().getGenres();
-			if(genres.isEmpty())
-				System.out.println(nextLine() + "There isn't any genre");
+			if(getAdmin().getGenres().isEmpty())
+				System.out.println(nextLine() + "There isn't any genre" + nextLine());
 			else{
-				getAdmin().getGenres().forEach(genre -> System.out.println(genre));
 				getAdmin().editGenre(scanStringWithMessage(nextLine() + "Enter genre to modify: "), 
 					scanStringWithMessage("Enter new genre:")); 
-				System.out.println(nextLine() + "Genre modified successfully");
+				System.out.println(nextLine() + "Genre modified successfully" + nextLine());
 			}
 		} 
 		catch (InvalidGenreException ex){
@@ -251,22 +257,29 @@ public class App implements Scanneable, NextLiner
 	}
 
 	private void fillGenreRemove() {
+		showGenres();
 		try {
-			getAdmin().removeGenre(scanStringWithMessage(nextLine() + "Enter genre to remove: "));
-			System.out.println(nextLine() + "Genre removed successfully");
+			if(getAdmin().getGenres().isEmpty()){
+				System.out.println("There isn't any genre in the catalog" + nextLine());
+			}
+			else{
+				getAdmin().removeGenre(scanStringWithMessage(nextLine() + "Enter genre to remove: "));
+				System.out.println(nextLine() + "Genre removed successfully" + nextLine());
+			}
 		} catch (InvalidGenreException e) {
-			System.out.println(nextLine() + e.getMessage());
+			System.out.println(nextLine() + e.getMessage() + nextLine());
 			showMenu();
 		}
 	}
 
 	private void fillComicRemove() {
-		try { 
-			getAdmin().removeComic(scanStringWithMessage("Enter comic name to remove: "));
-			System.out.println(nextLine() + "Comic removed successfully");
+		showComics();
+		try {
+			getAdmin().removeComic(scanStringWithMessage(nextLine() + "Enter comic name to remove: "));
+			System.out.println(nextLine() + "Comic removed successfully" + nextLine());
 		}
 		catch (NoSuchElementException ex) { 
-			System.out.println(nextLine() + "The comic doesn't exist");
+			System.out.println(nextLine() + "The comic doesn't exist" + nextLine());
 			showMenu();
 		}
 		
@@ -305,24 +318,45 @@ public class App implements Scanneable, NextLiner
 	}
 	
 	private void returnAComic() {
-		loggedIn.returnComic(scanStringWithMessage("Enter comic name to return: "));
-	}
-
-	private void borrowAComic() {
-		try {
-			loggedIn.borrowComic(scanStringWithMessage("Enter comic name to borrow"));
-		} catch (NoMoreComicsException e) {
-			System.out.println(e.getMessage() + nextLine());
+		try{
+			loggedIn.returnComic(scanStringWithMessage(nextLine() + "Enter comic name to return: "));
+			System.out.println(nextLine() + "Comic returned successfully" + nextLine());
+		}
+		catch (NoSuchElementException ex){
+			System.out.println(nextLine() + "The comic doesn't exist" + nextLine());
+		}
+		catch (Exception ex){
+			System.out.println(nextLine() + ex.getMessage() + nextLine());
 		}
 	}
 
+	private void borrowAComic() {
+		showComics();
+		try {
+			loggedIn.borrowComic(scanStringWithMessage("Enter comic name to borrow: "));
+			System.out.println(nextLine() + "Comic borrowed successfully" + nextLine());
+		} 
+		catch (NoMoreComicsException e) {
+			System.out.println(nextLine() + e.getMessage() + nextLine());
+		}
+		catch (NoSuchElementException e) {
+			System.out.println(nextLine() + "The comic doesn't exist" + nextLine());
+		}
+		
+	}
+
 	private void showUserLoans() {
-		loggedIn.getLoans().forEach(loan -> System.out.println( loan.getComic().getName() ));
-		nextLine();
+		List<Loan> loans = loggedIn.getLoans();
+		if(loans.isEmpty())
+			System.out.println(nextLine() + "You don't have any loan" + nextLine());
+		else{
+			System.out.println("");
+			loans.forEach(loan -> System.out.println(loan.getComic().getName() + " - " + loan.getComic().getGenre() + nextLine()));
+		}
 	}
 
 	private void showCatalogMenu() {
-		System.out.println(nextLine() + "Catalog visualization preference" + nextLine());
+		System.out.println("Catalog visualization preference" + nextLine());
 		showCatalogMenuOptions();
 		showCatalogPreference(scanIntOption());
 	}
@@ -340,34 +374,38 @@ public class App implements Scanneable, NextLiner
 			break;
 		case 2:
 			try{ selectGenre(); }
-			catch (InvalidGenreException|NoGendersException ex){ 
+			catch (InvalidGenreException|NoGenreException ex){ 
 				System.out.println(ex.getMessage()); 
 				showCatalogMenu();
 			}
 			catch(NullPointerException ex){
-				System.out.println(nextLine() + "There isn't any comic in the catalog");
+				System.out.println(nextLine() + "There isn't any comic in the catalog" + nextLine());
 				showCatalogMenu();
 			}
+			break;
 		case 3:
+			System.out.println("");
 			showMenu();
+			break;
 		default:
 			break;
 		}
 	}
 	
-	private void selectGenre() throws InvalidGenreException,NoGendersException{
+	private void selectGenre() throws InvalidGenreException,NoGenreException{
+		System.out.println("");
 		viewGenres();
-		List <Comic> filteredComics = loggedIn.getComicsByGenre(scanStringWithMessage("Type a genre from the list:" + nextLine()));
+		List <Comic> filteredComics = Catalog.getInstance().getComicsByGenre(scanStringWithMessage("Type a genre from the list:" + nextLine()));
 		if(filteredComics.isEmpty())
 			throw new InvalidGenreException(nextLine() + "The genre is invalid" + nextLine());
 		else
-			showFilteredcomics(filteredComics);
+			showFilteredcomics(filteredComics);showCatalogMenu();
 	}
 	
-	private void viewGenres() throws NoGendersException { 
-		Set<String> genres = loggedIn.getGenres();
+	private void viewGenres() throws NoGenreException { 
+		Set<String> genres = Catalog.getInstance().getGenres();
 		if(genres.isEmpty())
-			throw new NoGendersException(nextLine() + "There isn't any gender in the catalog" + nextLine());
+			throw new NoGenreException("There isn't any genre in the catalog" + nextLine());
 		else
 			genres.stream().forEach(genre -> System.out.println(genre + nextLine()));
 	}
@@ -377,31 +415,59 @@ public class App implements Scanneable, NextLiner
 			getAdmin().registerUser(scanStringWithMessage(nextLine() + "Enter new user ID: "),
 						scanStringWithMessage("Enter new user password: "));
 			System.out.println(nextLine() + "User added successfully" + nextLine());
-		} catch (UserExistsException e) {
+		} 
+		catch (UserExistsException e) {
+			System.out.println(nextLine() + "Failed to register new user" + nextLine() + 
+								nextLine() + e.getMessage() + nextLine());
+		}
+		catch (Exception e) {
 			System.out.println(nextLine() + e.getMessage() + nextLine());
 		}
 	}
 	
 	private void editUser(){
-		showEditOptions();
 		showUsers();
+		showEditOptions();
 		try{
-			
 			switch (editOptionSelection()) {
 			case 1:
 				try {
-					getAdmin().editUsername(scanStringWithMessage(nextLine() + "Enter the actual user ID:"), 
-							scanStringWithMessage("Enter the new user ID:"));
+					String id = scanStringWithMessage(nextLine() + "Enter the actual user ID:");
+					if(id.equals("Sheldon")){
+						System.out.println(nextLine() + "Invalid operation, can't edit admin username");
+						editUser();
+					}
+					else{
+						getAdmin().editUsername(id, scanStringWithMessage("Enter the new user ID:"));
+						System.out.println("");
+						System.out.println("Username edited successfully");
+						System.out.println("");
+					}
 				} catch (UserExistsException e) {
+					System.out.println(nextLine() + e.getMessage() + nextLine());
+					editUser();
+				}
+				catch (Exception e) {
 					System.out.println(nextLine() + e.getMessage() + nextLine());
 					editUser();
 				}
 				break;
 			case 2:
-				getAdmin().editPassword(scanStringWithMessage("Enter the ID to change the password: " ), 
-						scanStringWithMessage("Enter the new password: "));
+				try{
+					getAdmin().editPassword(scanStringWithMessage(nextLine() + "Enter the ID to change the password: " ), 
+							scanStringWithMessage("Enter the new password: "));
+					System.out.println("");
+					System.out.println("User password edited successfully");
+					System.out.println("");
+					editUser();
+				}
+				catch (Exception e) {
+					System.out.println(nextLine() + e.getMessage() + nextLine());
+					editUser();
+				}
 				break;
 			case 3:
+				System.out.println("");
 				showMenu();
 				break;
 			default:
@@ -418,13 +484,18 @@ public class App implements Scanneable, NextLiner
 			editUser();
 		}
 		catch(NoSuchElementException ex){
-			System.out.println(nextLine() + "The ID doesn't exist" + nextLine());
+			System.out.println(nextLine() + "The ID doesn't exist");
 			editUser();
 		}
 	}
 	
 	private void showEditOptions() {
-		System.out.println(nextLine() + "1. Edit user ID" + nextLine() + "2. Edit user password" + nextLine() + "3. Back" + nextLine());
+		System.out.println("1. Edit user ID" + nextLine() + "2. Edit user password" + nextLine() + "3. Back" + nextLine());
+	}
+	
+	private void showGenres() {
+		System.out.println("");
+		getAdmin().getGenres().stream().forEach(genre -> System.out.println(genre));
 	}
 	
 	private int editOptionSelection() throws InvalidOptionException{
@@ -435,28 +506,32 @@ public class App implements Scanneable, NextLiner
 	}
 	
 	private void showFilteredcomics(List<Comic> filteredComics) {
-		filteredComics.stream().forEach(comic -> System.out.println(comic.getName() + nextLine()));
+		System.out.println(nextLine() + "Comic name - Genre - Copies available" + nextLine());
+		filteredComics.stream().forEach(comic -> System.out.println(comic.getName() + " - " + comic.getGenre() + " - " + comic.getCopies() + nextLine()));
 	}
 	
 	private void deleteUser(){
-		System.out.println("");
-		getAdmin().getUsers().stream().filter(user -> !user.getId().equals("Sheldon")).forEach(user -> System.out.println(user.getId()));
-		System.out.println("");
+		showUsers();
 		String idToRemove = scanStringWithMessage("Enter the ID to remove: ");
 		if(idToRemove.equals("Sheldon")){
-			System.out.println(nextLine() + "You can't remove yourself");
+			System.out.println(nextLine() + "You can't remove yourself" + nextLine());
 			showMenu();
 		}
 		else if(getAdmin().revokeUser(idToRemove))
 			System.out.println(nextLine() + "User removed successfully");
 		else
-			System.out.println(nextLine() + "The user doesn't exist");
+			System.out.println(nextLine() + "The ID doesn't exist" + nextLine());
 	}
 	
 	private void fillComicRegister() {
-		getAdmin().registerComic(new Comic(scanStringWithMessage(nextLine() + "Enter new Comic name: "),
-						scanStringWithMessage("Enter genre of new comic: ")));
-		System.out.println(nextLine() + "Comic added successfully");
+		try {
+			getAdmin().registerComic(new Comic(scanStringWithMessage(nextLine() + "Enter new Comic name: "),
+							scanStringWithMessage("Enter genre of new comic: ")));
+			System.out.println("");
+		} catch (InvalidComicNameException | InvalidComicGenreException e) {
+			System.out.println(e.getMessage() + nextLine());
+		}
+		
 	}
 	
 	private Admin getAdmin(){

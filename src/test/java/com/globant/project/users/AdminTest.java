@@ -5,7 +5,8 @@ import java.util.List;
 import com.globant.project.catalog.Catalog;
 import com.globant.project.comic.Comic;
 import com.globant.project.exceptions.InvalidGenreException;
-import com.globant.project.exceptions.UserExistsException;
+import com.globant.project.exceptions.inputs.InvalidComicGenreException;
+import com.globant.project.exceptions.inputs.InvalidComicNameException;
 
 import junit.framework.TestCase;
 
@@ -25,7 +26,7 @@ public class AdminTest extends TestCase {
 		Catalog.emptyComics();
 	}
 	
-	public void testAdminCanRegisterAnUserInAnEmptyCatalog() throws UserExistsException{
+	public void testAdminCanRegisterAnUserInAnEmptyCatalog() throws Exception{
 		admin.registerUser("Batman","bati");
 		assertFalse(admin.getUsers().isEmpty());
 		assertEquals(3, admin.getUsers().size());
@@ -49,14 +50,14 @@ public class AdminTest extends TestCase {
 		assertFalse(admin.userExist("Nahue"));
 	}
 	
-	public void testAnAdminCanAddAComicToAnEmptyCatalog(){
+	public void testAnAdminCanAddAComicToAnEmptyCatalog() throws InvalidComicNameException, InvalidComicGenreException{
 		Comic spidermanComic = new Comic("Spiderman","Superheroes");
 		admin.registerComic(spidermanComic);
 		assertEquals(spidermanComic, admin.searchComic("Spiderman"));
 		assertEquals(1, admin.searchComic("Spiderman").getCopies());
 	}
 	
-	public void testWhenAnAdminAddsAnExistentComicItIncreasesItsCopiesByOne(){
+	public void testWhenAnAdminAddsAnExistentComicItIncreasesItsCopiesByOne() throws InvalidComicNameException, InvalidComicGenreException{
 		Comic spidermanComic = new Comic("Spiderman","Superheroes");
 		Comic otherSpidermanComic = new Comic("Spiderman","Superheroes");
 		admin.registerComic(spidermanComic);
@@ -64,7 +65,7 @@ public class AdminTest extends TestCase {
 		assertEquals(2, admin.searchComic("Spiderman").getCopies());
 	}
 	
-	public void testGetCorrectGenresOfRegisteredComics(){
+	public void testGetCorrectGenresOfRegisteredComics() throws InvalidComicNameException, InvalidComicGenreException{
 		admin.registerComic(new Comic("Spiderman","Superheroes"));
 		admin.registerComic(new Comic("The walking dead", "Science fiction"));
 		admin.registerComic(new Comic("Daredevil","Superheroes"));
@@ -73,7 +74,7 @@ public class AdminTest extends TestCase {
 		assertTrue(admin.getGenres().contains("Superheroes"));
 	}
 	
-	public void testWhenEditAnExistentGenreItChangesAllComicsWithThatGenre() throws InvalidGenreException{
+	public void testWhenEditAnExistentGenreItChangesAllComicsWithThatGenre() throws InvalidGenreException, InvalidComicNameException, InvalidComicGenreException{
 		admin.registerComic(new Comic("Spiderman","Superheres"));
 		admin.registerComic(new Comic("Batman","Superheres"));
 		admin.editGenre("Superheres","Superheroes");
@@ -82,7 +83,7 @@ public class AdminTest extends TestCase {
 		assertEquals(1,admin.getGenres().size());
 	}
 	
-	public void testViewOnlyComicsOfOneGenre(){
+	public void testViewOnlyComicsOfOneGenre() throws InvalidComicNameException, InvalidComicGenreException{
 		Comic spiderman = new Comic("spiderman","Superheroes"), batman = new Comic("batman","Superheroes"),
 				twd = new Comic("The walking dead", "Science fiction"), supercampeones = new Comic("Captain Tsubasa", "Sports"); 
 		admin.registerComic(spiderman);
@@ -97,14 +98,14 @@ public class AdminTest extends TestCase {
 		assertEquals(2, filteredComicsByGender.size());
 	}
 	
-	public void testEditAnUserSuccessfully() throws UserExistsException{
+	public void testEditAnUserSuccessfully() throws Exception{
 		admin.editUsername("Nahue","Duality");
 		admin.editPassword("Duality","newPassword");
 		assertTrue(admin.userExist("Duality"));
 		assertFalse(admin.userExist("Nahue"));
 	}
 	
-	public void testRemoveOneCopyOfThreeSuccessfully(){
+	public void testRemoveOneCopyOfThreeSuccessfully() throws InvalidComicNameException, InvalidComicGenreException{
 		Comic spidermanComic = new Comic("spiderman","Superheroes");		
 		admin.registerComic(spidermanComic);
 		admin.registerComic(new Comic("spiderman","Superheroes"));
@@ -114,7 +115,7 @@ public class AdminTest extends TestCase {
 		assertEquals(2,admin.searchComic("spiderman").getCopies());
 	}
 	
-	public void testRemoveUniqueCopySuccessfully(){
+	public void testRemoveUniqueCopySuccessfully() throws InvalidComicNameException, InvalidComicGenreException{
 		Comic spidermanComic = new Comic("spiderman","Superheroes");
 		admin.registerComic(spidermanComic);
 		admin.removeComic("spiderman");
@@ -122,7 +123,7 @@ public class AdminTest extends TestCase {
 		assertTrue(admin.getComics().isEmpty());
 	}
 	
-	public void testRemovesGenreSuccessfully() throws InvalidGenreException{
+	public void testRemovesGenreSuccessfully() throws InvalidGenreException, InvalidComicNameException, InvalidComicGenreException{
 		Comic spidermanComic = new Comic("spiderman","Superheroes");
 		Comic batmanComic = new Comic("batman","Superheroes");
 		Comic twdComic = new Comic("The walking dead","Science Fiction");
@@ -140,7 +141,7 @@ public class AdminTest extends TestCase {
 		assertTrue(admin.getComics().contains(vikingsComic));
 	}
 	
-	public void testEditsGenreAndAllOfItComicsSuccessfully() throws InvalidGenreException{
+	public void testEditsGenreAndAllOfItComicsSuccessfully() throws InvalidGenreException, InvalidComicNameException, InvalidComicGenreException{
 		Comic spidermanComic = new Comic("spiderman","Superheroes");
 		Comic batmanComic = new Comic("batman","Superheroes");
 		admin.registerComic(spidermanComic);

@@ -46,7 +46,7 @@ public class Catalog {
 	}
 	
 	public void registerComic(Comic aComic) {
-		if(comics.stream().anyMatch(comic -> comic.getName().equals(aComic.getName())))
+		if(comics.stream().anyMatch(comic -> comic.getName().equals(aComic.getName()) && comic.getGenre().equals(aComic.getGenre())))
 			comics.stream().filter(comic -> comic.getName().equals(aComic.getName())).findFirst().get().addCopy();
 		else
 			comics.add(aComic);

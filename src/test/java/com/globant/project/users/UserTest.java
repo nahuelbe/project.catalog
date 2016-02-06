@@ -3,6 +3,8 @@ package com.globant.project.users;
 import com.globant.project.catalog.Catalog;
 import com.globant.project.comic.Comic;
 import com.globant.project.exceptions.NoMoreComicsException;
+import com.globant.project.exceptions.inputs.InvalidComicGenreException;
+import com.globant.project.exceptions.inputs.InvalidComicNameException;
 
 import junit.framework.TestCase;
 
@@ -21,7 +23,7 @@ public class UserTest extends TestCase {
 		Catalog.emptyUsers();
 	}
 	
-	public void testAnUserBorrowsAValidComicWithTwoCopiesSuccessfully() throws NoMoreComicsException{
+	public void testAnUserBorrowsAValidComicWithTwoCopiesSuccessfully() throws NoMoreComicsException, InvalidComicNameException, InvalidComicGenreException{
 		User user = new User("Batman","bati");
 		Catalog.getInstance().addUser(user);
 		Comic spidermanComic = new Comic("Spiderman", "Superheroes");
@@ -34,7 +36,7 @@ public class UserTest extends TestCase {
 		assertEquals(1, user.getLoans().size());
 	}
 	
-	public void testAnUserCantBorrowAValidComicWithNoCopies() throws NoMoreComicsException{
+	public void testAnUserCantBorrowAValidComicWithNoCopies() throws NoMoreComicsException, InvalidComicNameException, InvalidComicGenreException{
 		User user = new User("Batman","bati");
 		User user2 = new User("Nahue","sarasa");
 		Catalog.getInstance().addUser(user);
@@ -49,7 +51,7 @@ public class UserTest extends TestCase {
 		
 	}
 	
-	public void testAnUserReturnsAComic() throws NoMoreComicsException{
+	public void testAnUserReturnsAComic() throws Exception{
 		User user = new User("Nahue","sarasa");
 		Catalog.getInstance().addUser(user);
 		Comic spidermanComic = new Comic("Spiderman", "Superheroes");

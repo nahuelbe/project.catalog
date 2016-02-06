@@ -1,4 +1,4 @@
-package com.globant.project.exceptions;
+package com.globant.project.exceptions.inputs;
 
 @SuppressWarnings("serial")
 public class InvalidOptionException extends Exception {
